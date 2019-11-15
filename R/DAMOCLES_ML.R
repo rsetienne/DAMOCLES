@@ -1,4 +1,4 @@
-DAMOCLES_all_loglik_choosepar = function(trparsopt,idparsopt,trparsfix,idparsfix,idparsequal,phy,patrait,edgeTList,locatenode,pchoice,methode,model)
+DAMOCLES_all_loglik_choosepar <- function(trparsopt,idparsopt,trparsfix,idparsfix,idparsequal,phy,patrait,edgeTList,locatenode,pchoice,methode,model)
 {
    trpars1 = rep(0,3 * (model == -1) + 2 * (model == 0) + 10 * (model == 0.1 | model == 0.2) + 8 * (model == 1) + 12 * (model == 2 | model == 2.2))
    trpars1[idparsopt] = trparsopt
