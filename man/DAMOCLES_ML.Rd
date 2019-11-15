@@ -1,0 +1,89 @@
+\name{DAMOCLES_ML}
+\alias{DAMOCLES_ML}
+\title{
+Maximization of the loglikelihood under the DAMOCLES model
+}
+\description{
+   This function computes the maximum likelihood estimates of the parameters of
+   the DAMOCLES model for a given phylogeny and presence-absence data.
+   It also outputs the corresponding loglikelihood that can be used in model 
+   comparisons.
+}
+\usage{
+DAMOCLES_ML(
+   phy = rcoal(10),
+   pa = matrix(c(phy$tip.label,sample(c(0,1),Ntip(phy),replace = T)),
+      nrow = Ntip(phy),ncol = 2),
+   initparsopt = c(0.1,0.1),
+   idparsopt = 1:length(initparsopt),
+   parsfix = 0,
+   idparsfix = (1:3)[-idparsopt],
+   pars2 = c(1E-3,1E-4,1E-5,1000),
+   pchoice = 0,
+   optimmethod = 'subplex'
+   )
+}
+\arguments{
+  \item{phy}{phylogeny in phylo format}
+  \item{pa}{presence-absence table.\cr
+The first column contains the labels of the species (corresponding to the tip labels in the phylogeny.\cr
+The second column contains the presence (1) or absence (0) of species in the local community.
+  }
+  \item{initparsopt}{ The initial values of the parameters that must be optimized}
+  \item{idparsopt}{
+The ids of the parameters that must be optimized, e.g. 1:2 for extinction rate, and offset of immigration rate
+The ids are defined as follows: \cr
+   id == 1 corresponds to mu (extinction rate) \cr
+   id == 2 corresponds to gamma_0 (offset of immigration rate) \cr
+   id == 3 corresponds to gamma_1 (parameter controlling decline in immigration rate with time)
+  }
+  \item{parsfix}{ The values of the parameters that should not be optimized. See idparsfix. }
+  \item{idparsfix}{
+The ids of the parameters that should not be optimized, e.g. c(1,3) if mu and gamma_1 should not be optimized,
+but only gamma_0. In that case idparsopt must be c(2). The default is to fix all parameters not specified in idparsopt.
+  }
+  \item{pars2}{Vector of settings: \cr
+    \code{pars2[1]} sets the relative tolerance in the parameters \cr \cr
+    \code{pars2[2]} sets the relative tolerance in the function \cr \cr
+    \code{pars2[3]} sets the absolute tolerance in the parameters \cr \cr
+    \code{pars2[4]} sets the maximum number of iterations
+  }
+  \item{pchoice}{ sets which p-value to optimize (default 0) \cr
+    pchoice == 0 correspond to the sum of p_0f + p_1f \cr
+    pchoice == 1 correspond to p_0f \cr
+    pchoice == 2 correspond to p_1f
+  }
+  \item{optimmethod}{ Method used in optimization of the likelihood. Current default is 'subplex'. Alternative is 'simplex' (default of previous version)}
+}
+\details{The output is a dataframe containing estimated parameters and maximum loglikelihood.}
+\value{
+ \item{mu}{ gives the maximum likelihood estimate of mu}
+ \item{gamma_0}{ gives the maximum likelihood estimate of gamma_0}
+ \item{gamma_1}{ gives the maximum likelihood estimate of gamma_1}
+ \item{loglik}{ gives the maximum loglikelihood}
+ \item{df}{ gives the number of estimated parameters, i.e. degrees of feedom}
+ \item{conv}{ gives a message on convergence of optimization; conv = 0 means convergence}
+}
+\references{
+Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for phylogenetic community structure. Ecology Letters 18: 153-163.}
+\author{
+Rampal S. Etienne
+}
+\seealso{
+ \code{\link{DAMOCLES_loglik}}
+ \code{\link{DAMOCLES_sim}}
+}
+\examples{
+data(NWPrimates_data)
+out = DAMOCLES_ML(
+   phy = NWPrimates_data[[1]],
+   pa = NWPrimates_data[[2]],
+   initparsopt = c(0.01,1.8),
+   idparsopt = c(1,2),
+   parsfix = c(0),
+   idparsfix = c(3),
+   pars2 = c(1E-3,1E-4,1E-5,1000),
+   pchoice = 0,
+   optimmethod = 'subplex')
+}
+\keyword{ models }
