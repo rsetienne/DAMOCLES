@@ -1,0 +1,29 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
+dist: bionic
+cache: packages
+
+r_packages:
+  - deSolve
+  - knitr
+
+r_github_packages:
+  - jimhester/covr
+  - jimhester/lintr
+
+
+before_install: 
+  # Need to update on bionic for now
+  - sudo apt update -qq
+  # ImageMagick
+  - sudo add-apt-repository -y ppa:opencpu/imagemagick
+  - sudo apt-get update
+  - sudo apt-get install -y libmagick++-dev
+  # Codecov
+  - sudo pip install codecov
+
+after_success:
+  - Rscript -e "lintr::lint_package()"
+  - travis_wait Rscript -e "covr::codecov()"
+
