@@ -2,11 +2,11 @@ HERACLES_sim = function(phy, mu_1,gamma_1,mu_2, gamma_2,q_0_to_2,q_2_to_0,q_1_to
 root.state, root.trait.state, plotit = FALSE,keepExtinct = FALSE) 
 {	
 	
-	if(plotit  ==  TRUE)
+	if(plotit == TRUE)
 	{
-      	plot.phylo(phy,main="trait 2 (green), trait 1 (red), trait 0 (blue); dark (present), light (absent)")
+    ape::plot.phylo(phy,main="trait 2 (green), trait 1 (red), trait 0 (blue); dark (present), light (absent)")
 	}
-  dn = DDD::roundn(dist.nodes(phy),6)
+  dn = DDD::roundn(ape::dist.nodes(phy),6)
   ntips = length(phy$tip.label)
   nbranch = 2 * ntips - 2
   patable = data.frame(p = phy$edge[, 1], d = phy$edge[, 2], 
@@ -21,20 +21,18 @@ root.state, root.trait.state, plotit = FALSE,keepExtinct = FALSE)
     	    	
 	if(root.state == 1 & root.trait.state  == 0)
 	{
-     cat("Root state and root trait state are incoherent")
-     break
+     stop("Root state and root trait state are incoherent")
 	}
 	if(r_2 == 0 & r_3 > 0)
 	{
-     cat("r_3 cannot > 0 when r_2 = 0")
-     break
+     stop("r_3 cannot > 0 when r_2 = 0")
 	}    
   patable$tips[which(patable$d<=ntips)] = 1
   patable$y[which(patable$tips == 1)] = patable$d[which(patable$tips == 1)]
     
   if(plotit == TRUE)
   {
-  	 while(length(na.omit(patable$y)) < length(patable$y))
+  	 while(length(stats::na.omit(patable$y)) < length(patable$y))
      {
 	    	for(i in 1:length(patable$y))
         {
@@ -42,7 +40,7 @@ root.state, root.trait.state, plotit = FALSE,keepExtinct = FALSE)
            {
 		    	    focalp = patable$p[i]
 		    	    focaly = patable$y[which(patable$p == focalp)]
-   		    	  if(length(na.omit(focaly)) == 2)
+   		    	  if(length(stats::na.omit(focaly)) == 2)
               {
 	   	   			   focald = which(patable$d == focalp)
 		    		     patable$y[focald] = (focaly[1]+focaly[2])/2

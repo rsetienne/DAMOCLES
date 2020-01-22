@@ -1,32 +1,32 @@
 compute_edgeTList = function(tree)
 {
   tree$node.label = NULL
-  nNode = Nnode(tree)
+  nNode = ape::Nnode(tree)
   edgeTList = vector("list", nNode)
-  ca = max(branching.times(tree))
+  ca = max(ape::branching.times(tree))
   for (i in 1:nNode)
   {
-    ntips = Ntip(tree)
+    ntips = ape::Ntip(tree)
     if(ntips > 2)
     {
-      nodeDepths = dist.nodes(tree)[(ntips + 1):(2 * ntips - 1), ntips + 1]
+      nodeDepths = ape::dist.nodes(tree)[(ntips + 1):(2 * ntips - 1), ntips + 1]
       w = which(nodeDepths == max(nodeDepths))[1]
-      toDrop1 = clade.members(as.numeric(names(nodeDepths[w])), tree, tip.labels = TRUE, include.nodes=TRUE)$tips
+      toDrop1 = caper::clade.members(as.numeric(names(nodeDepths[w])), tree, tip.labels = TRUE, include.nodes=TRUE)$tips
       toDrop2 = c(which(tree$tip.label == toDrop1[1]), which(tree$tip.label == toDrop1[2]))
-      edgeT = ca - c(dist.nodes(tree)[toDrop2, ntips + 1], nodeDepths[w])
+      edgeT = ca - c(ape::dist.nodes(tree)[toDrop2, ntips + 1], nodeDepths[w])
     } else
     {
-      nodeDescendants = clade.members.list(tree, tip.labels = TRUE)
+      nodeDescendants = caper::clade.members.list(tree, tip.labels = TRUE)
       sisterNodes = which(sapply(nodeDescendants, length) == 2)
       sisterDepths = nodeDepths[sisterNodes]
       w = which(sisterDepths == max(sisterDepths))[1]
       toDrop1 = nodeDescendants[[sisterNodes[w]]]
       toDrop2 = c(which(tree$tip.label == toDrop1[1]), which(tree$tip.label == toDrop1[2]))
-      edgeT = ca - c(dist.nodes(tree)[toDrop2, ntips + 1], sisterDepths[w])
+      edgeT = ca - c(ape::dist.nodes(tree)[toDrop2, ntips + 1], sisterDepths[w])
     }
     names(edgeT)[1:2] = toDrop1
     edgeTList[[i]] = edgeT
-    tree = suppressWarnings(drop.tip(tree, toDrop1, trim.internal = FALSE))
+    tree = suppressWarnings(ape::drop.tip(tree, toDrop1, trim.internal = FALSE))
     tree$tip.label[which(tree$tip.label == "NA")] = paste("p",i - 1, sep = "")
   }
   return(edgeTList)
@@ -96,7 +96,7 @@ DAMOCLES_all_M = function(
       M[5,1] = q2t0
       M[5,3] = mu2
       M[5,4] = q2t1
-      if(sum(is.nan(M)) > 0 | sum(M == Inf) > 0) { print(M); flush.console()}
+      if(sum(is.nan(M)) > 0 | sum(M == Inf) > 0) { print(M); utils::flush.console()}
    }
    if(model == 0.1 | model == 0.2 | model == 2.2)
    {
@@ -185,7 +185,7 @@ DAMOCLES_all_integrate_ODE_old = function(
       }
    } else {
       # SOLVE ODE NUMERICALLY
-      y = ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,M,model),rtol = 1E-10,atol = 1E-16, method = 'lsoda')
+      y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,M,model),rtol = 1E-10,atol = 1E-16, method = 'lsoda')
       p = y[2,2:(1 + numvar)]
    }
    return(p)
@@ -248,7 +248,7 @@ DAMOCLES_all_integrate_ODE = function(
       }
    } else {
       # SOLVE ODE NUMERICALLY
-      y = ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,Mlist$M,model),rtol = 1E-10,atol = 1E-16, method = methode)
+      y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,Mlist$M,model),rtol = 1E-10,atol = 1E-16, method = methode)
       p = y[2,2:(1 + numvar)]
    }
    return(p)
@@ -351,6 +351,59 @@ DAMOCLES_check_edgeTList = function(phy,edgeTList)
   return(edgeTList)
 }
 
+
+
+#' Likelihood for DAMOCLES model
+#' 
+#' Computes likelihood for the presence-absence data of species in a local
+#' community for a given phylogeny of species in the region.
+#' 
+#' 
+#' @param phy phylogeny in phylo format
+#' @param pa presence-absence table with the first column the species labels
+#' and the second column the presence (1) or absence (0) of the species
+#' @param pars Vector of model parameters: \cr \code{pars[1]} corresponds to mu
+#' (extinction rate in local community) \cr \code{pars[2]} corresponds to
+#' gamma_0 in formula gamma(t) = gamma_0/(1 + gamma_1 * t) where gamma(t) is
+#' immigration rate into local community) \cr \code{pars[3]} corresponds to
+#' gamma_1 in formula gamma(t) = gamma_0/(1 + gamma_1 * t) where gamma(t) is
+#' immigration rate into local community)
+#' @param pchoice sets the p-value to optimize: \cr pchoice == 0 corresponds to
+#' the sum of p_0f + p_1f \cr pchoice == 1 corresponds to p_0f \cr pchoice == 2
+#' corresponds to p_1f \cr
+#' @param edgeTList list of edge lengths that need to be succesively pruned; if
+#' not specified, it will computed using compute_edgeTList
+#' @param methode method used to solve the ODE. Either 'analytical' for matrix exponentiation
+#' or any of the numerical solvers, used in deSolve.
+#' @param model model used. Default is 0 (standard null model). Other options are 1 (binary traits)
+#' 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)
+#' @param Mlist list of M matrices that can be specified when methode = 'analytical'. If set
+#' at NULL (default) and methode = 'analytical', Mlist will be computed.
+#' @return The loglikelihood
+#' @author Rampal S. Etienne
+#' @seealso \code{\link{DAMOCLES_ML}} \code{\link{DAMOCLES_sim}}
+#' @references Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for
+#' phylogenetic community structure. Ecology Letters 18: 153-163.
+#' @keywords models
+#' @examples
+#' 
+#'   #TEST IT WORKS
+#'   library(ape)
+#'   phy = ape::rcoal(100)
+#'   pars = c(0.5,0.1,0.1)
+#'   pa = rbinom(100,c(0,1),0.5)
+#'   pa = matrix(c(phy$tip.label,pa),nrow = length(phy$tip.label),ncol = 2)
+#' 
+#'   # - without a root edge
+#'   loglik = DAMOCLES_loglik(phy,pa,pars)
+#'   loglik
+#' 
+#'   # - with a root edge
+#'   phy$root.edge = 2
+#'   loglik = DAMOCLES_loglik(phy,pa,pars)
+#'   loglik
+#' 
+#' @export DAMOCLES_loglik
 DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
    phy,
    pa,
@@ -466,7 +519,7 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
         if(min(p) < 0 || is.nan(min(p)))
         {
           cat('Numerical problems: negative probabilities encountered. Results may not be reliable.\n')
-          flush.console()
+          utils::flush.console()
         }
         p[p < 0] = 0
         p[is.nan(p)] = 0
@@ -474,7 +527,7 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
         if(sump == 0)
         {
           cat('Numerical problems: all probabilities are zero or negative!\n')
-          flush.console()
+          utils::flush.console()
           loglik = -Inf
           return(loglik)       
         }
@@ -489,13 +542,13 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
      if(min(pnew) < 0 || is.nan(min(pnew)))
      {
        cat('Numerical problems: negative probabilities encountered. Results may not be reliable.\n')
-       flush.console()
+       utils::flush.console()
        pnew[pnew < 0] = 0
        pnew[is.nan(pnew)] = 0
        if(sum(pnew) == 0)
        {
          cat('Numerical problems: all probabilities are zero or negative!\n')
-         flush.console()
+         utils::flush.console()
          loglik = -Inf
          return(loglik)       
        }
