@@ -26,6 +26,15 @@ corresponds to p_1f \cr}
 
 \item{edgeTList}{list of edge lengths that need to be succesively pruned; if
 not specified, it will computed using compute_edgeTList}
+
+\item{methode}{method used to solve the ODE. Either 'analytical' for matrix exponentiation
+or any of the numerical solvers, used in deSolve.}
+
+\item{model}{model used. Default is 0 (standard null model). Other options are 1 (binary traits)
+2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)}
+
+\item{Mlist}{list of M matrices that can be specified when methode = 'analytical'. If set
+at NULL (default) and methode = 'analytical', Mlist will be computed.}
 }
 \value{
 The loglikelihood
@@ -38,7 +47,7 @@ community for a given phylogeny of species in the region.
 
   #TEST IT WORKS
   library(ape)
-  phy = rcoal(100)
+  phy = ape::rcoal(100)
   pars = c(0.5,0.1,0.1)
   pa = rbinom(100,c(0,1),0.5)
   pa = matrix(c(phy$tip.label,pa),nrow = length(phy$tip.label),ncol = 2)

@@ -7,8 +7,7 @@
 DAMOCLES_ML(phy, pa, initparsopt, idparsopt = 1:length(initparsopt),
   parsfix = NULL, idparsfix = NULL, idparsequal = NULL,
   pars2 = c(0.001, 1e-04, 1e-05, 1000), optimmethod = "subplex",
-  pchoice = 0, edgeTList = NULL, locatenode = NULL,
-  methode = "analytical", model = 0)
+  pchoice = 0, edgeTList = NULL, methode = "analytical", model = 0)
 }
 \arguments{
 \item{phy}{phylogeny in phylo format}
@@ -35,6 +34,9 @@ e.g. c(1,3) if mu and gamma_1 should not be optimized, but only gamma_0. In
 that case idparsopt must be c(2). The default is to fix all parameters not
 specified in idparsopt.}
 
+\item{idparsequal}{The ids of the parameters that should be set equal to the 
+first parameter of the same type.}
+
 \item{pars2}{Vector of settings: \cr \code{pars2[1]} sets the relative
 tolerance in the parameters \cr \cr \code{pars2[2]} sets the relative
 tolerance in the function \cr \cr \code{pars2[3]} sets the absolute
@@ -44,9 +46,18 @@ of iterations}
 \item{optimmethod}{Method used in optimization of the likelihood. Current
 default is 'subplex'. Alternative is 'simplex' (default of previous version)}
 
-\item{pchoice}{sets which p-value to optimize (default 0) \cr pchoice == 0
-correspond to the sum of p_0f + p_1f \cr pchoice == 1 correspond to p_0f \cr
-pchoice == 2 correspond to p_1f}
+\item{pchoice}{sets the p-value to optimize: \cr pchoice == 0 corresponds to
+the sum of p_0f + p_1f \cr pchoice == 1 corresponds to p_0f \cr pchoice == 2
+corresponds to p_1f \cr}
+
+\item{edgeTList}{list of edge lengths that need to be succesively pruned; if
+not specified, it will computed using compute_edgeTList}
+
+\item{methode}{method used to solve the ODE. Either 'analytical' for matrix exponentiation
+or any of the numerical solvers, used in deSolve.}
+
+\item{model}{model used. Default is 0 (standard null model). Other options are 1 (binary traits)
+2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)}
 }
 \value{
 \item{mu}{ gives the maximum likelihood estimate of mu}
@@ -74,8 +85,8 @@ out = DAMOCLES_ML(
    pa = NWPrimates_data[[2]],
    initparsopt = c(0.01,1.8),
    idparsopt = c(1,2),
-   parsfix = c(0),
-   idparsfix = c(3),
+   parsfix = NULL,
+   idparsfix = NULL,
    pars2 = c(1E-3,1E-4,1E-5,1000),
    pchoice = 0,
    optimmethod = 'subplex')

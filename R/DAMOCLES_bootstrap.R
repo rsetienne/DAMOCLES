@@ -129,6 +129,8 @@
 #'    pa = NWPrimates_data[[2]],
 #'    initparsopt = c(0.01,1.8),
 #'    idparsopt = c(1,2),
+#'    idparsfix = NULL,
+#'    parsfix = NULL,
 #'    pars2 = c(1E-3,1E-4,1E-5,1000),
 #'    pchoice = 1,
 #'    runs = 2,
@@ -137,13 +139,13 @@
 #' 
 #' @export DAMOCLES_bootstrap
 DAMOCLES_bootstrap = function(
-   phy = rcoal(10),
-   pa = matrix(c(phy$tip.label,sample(c(0,1),Ntip(phy),replace = T)),
-      nrow = Ntip(phy),ncol = 2),
+   phy = ape::rcoal(10),
+   pa = matrix(c(phy$tip.label,sample(c(0,1),ape::Ntip(phy),replace = T)),
+      nrow = ape::Ntip(phy),ncol = 2),
    initparsopt = c(0.1,0.1),
    idparsopt = 1:length(initparsopt),
-   parsfix = 0,
-   idparsfix = (1:3)[-idparsopt],
+   parsfix = NULL,
+   idparsfix = NULL,
    pars2 = c(1E-3,1E-4,1E-5,1000),
    pchoice = 0,
    runs = 999,
@@ -157,12 +159,19 @@ DAMOCLES_bootstrap = function(
 	colnames(obs.samp) = phy$tip.label
 
 	n.obs = sum(obs.samp)
-	mntd.obs = picante::mntd(obs.samp, cophenetic(phy))
-	mpd.obs = picante::mpd(obs.samp, cophenetic(phy))
+	mntd.obs = picante::mntd(obs.samp, stats::cophenetic(phy))
+	mpd.obs = picante::mpd(obs.samp, stats::cophenetic(phy))
 	
 	# ESTIMATE COLONISATION AND LOCAL EXTINCTION RATES FROM EMPIRICAL DATA		
 	
-	pars = DAMOCLES_ML(phy,pa,initparsopt = initparsopt,idparsopt = idparsopt,parsfix = parsfix,idparsfix = idparsfix,pars2 = pars2,pchoice = pchoice)
+	pars = DAMOCLES_ML(phy = phy,
+	                   pa = pa,
+	                   initparsopt = initparsopt,
+	                   idparsopt = idparsopt,
+	                   parsfix = parsfix,
+	                   idparsfix = idparsfix,
+	                   pars2 = pars2,
+	                   pchoice = pchoice)
 	
   # SIMULATE NULL COMMUNITY UNDER THESE ESTIMATED RATES	
   
@@ -190,36 +199,37 @@ DAMOCLES_bootstrap = function(
   		DAMOCLES.samp = matrix(as.numeric(DAMOCLES_community[[1]]$state),nrow = 1)
   		colnames(DAMOCLES.samp) = phy$tip.label
   		nullCommStats$n.DAMOCLES[run] = sum(DAMOCLES.samp)
-  		nullCommStats$mntd.DAMOCLES[run] = picante::mntd(DAMOCLES.samp,cophenetic(phy))
-  		nullCommStats$mpd.DAMOCLES[run] = picante::mpd(DAMOCLES.samp,cophenetic(phy))
+  		nullCommStats$mntd.DAMOCLES[run] = picante::mntd(DAMOCLES.samp,stats::cophenetic(phy))
+  		nullCommStats$mpd.DAMOCLES[run] = picante::mpd(DAMOCLES.samp,stats::cophenetic(phy))
   		RD.samp = matrix(as.numeric(sample(pa[,2])),nrow = 1)
   		colnames(RD.samp) = phy$tip.label
-  		nullCommStats$mntd.RD[run] = picante::mntd(RD.samp,cophenetic(phy))
-  		nullCommStats$mpd.RD[run] = picante::mpd(RD.samp,cophenetic(phy))
+  		nullCommStats$mntd.RD[run] = picante::mntd(RD.samp,stats::cophenetic(phy))
+  		nullCommStats$mpd.RD[run] = picante::mpd(RD.samp,stats::cophenetic(phy))
   		
   		if(estimate_pars == TRUE)
       {
 	  	   DAMOCLES.pa = pa
 	  	   DAMOCLES.pa[,2]= DAMOCLES_community[[1]]$state	
-  		   parsNull = DAMOCLES_ML(phy,DAMOCLES.pa,initparsopt = c(pars[[1]],pars[[2]],0),idparsopt = idparsopt,parsfix = parsfix,idparsfix = idparsfix,pars2 = pars2,pchoice = pchoice)
-		     nullCommStats$mu.DAMOCLES[run] = parsNull[[1]]
-	       nullCommStats$gamma_0.DAMOCLES[run] = parsNull[[2]]
-		     nullCommStats$loglik.DAMOCLES[run] = parsNull[[4]]
+  		   parsNull = DAMOCLES_ML(phy,DAMOCLES.pa,initparsopt = c(pars[[1]],pars[[2]]),idparsopt = idparsopt,parsfix = parsfix,idparsfix = idparsfix,pars2 = pars2,pchoice = pchoice)
+  		   nullCommStats$mu.DAMOCLES[run] = parsNull$mu
+	       nullCommStats$gamma_0.DAMOCLES[run] = parsNull$gamma_0
+		     nullCommStats$loglik.DAMOCLES[run] = parsNull$loglik
       }
   	}
+	
 	# CALCULATE MEAN AND STANDARD DEVIATION OF N, MNTD AND MPD FOR SIMULATED DATA  	
 	n.mean.DAMOCLES = mean(nullCommStats$n.DAMOCLES)
 	mntd.mean.DAMOCLES = mean(nullCommStats$mntd.DAMOCLES)
-	mntd.sd.DAMOCLES = sd(nullCommStats$mntd.DAMOCLES)
+	mntd.sd.DAMOCLES = stats::sd(nullCommStats$mntd.DAMOCLES)
 	mpd.mean.DAMOCLES = mean(nullCommStats$mpd.DAMOCLES)
-	mpd.sd.DAMOCLES = sd(nullCommStats$mpd.DAMOCLES)
+	mpd.sd.DAMOCLES = stats::sd(nullCommStats$mpd.DAMOCLES)
 	loglik.mean.DAMOCLES = mean(nullCommStats$loglik.DAMOCLES)
-	loglik.sd.DAMOCLES = sd(nullCommStats$loglik.DAMOCLES)
+	loglik.sd.DAMOCLES = stats::sd(nullCommStats$loglik.DAMOCLES)
 	
 	mntd.mean.RD = mean(nullCommStats$mntd.RD)
-	mntd.sd.RD = sd(nullCommStats$mntd.RD)
+	mntd.sd.RD = stats::sd(nullCommStats$mntd.RD)
 	mpd.mean.RD = mean(nullCommStats$mpd.RD)
-	mpd.sd.RD = sd(nullCommStats$mpd.RD)
+	mpd.sd.RD = stats::sd(nullCommStats$mpd.RD)
 	
 	# CALCULATE STANDARDISED EFFECTS SIZES OF OBSERVED DATA
 	mntd.obs.z.RD = -1 * (mntd.obs - mntd.mean.RD)/mntd.sd.RD
@@ -240,17 +250,17 @@ DAMOCLES_bootstrap = function(
 	
 	if(estimate_pars == TRUE)
   {
-  	loglik.obs.z.DAMOCLES = (pars[[4]] - loglik.mean.DAMOCLES)/loglik.sd.DAMOCLES
-  	loglik.obs.rank.DAMOCLES = rank(c(pars[[4]], nullCommStats$loglik.DAMOCLES))[1]
+  	loglik.obs.z.DAMOCLES = (pars$loglik - loglik.mean.DAMOCLES)/loglik.sd.DAMOCLES
+  	loglik.obs.rank.DAMOCLES = rank(c(pars$loglik, nullCommStats$loglik.DAMOCLES))[1]
   	loglik.obs.q.DAMOCLES = loglik.obs.rank.DAMOCLES/(dim(nullCommStats)[1] + 1)
-  	mu = paste(pars[[1]],"(",quantile(nullCommStats$mu.DAMOCLES,(1 - conf.int)/2),":",quantile(nullCommStats$mu.DAMOCLES,conf.int + (1 - conf.int)/2),")",sep = "")
-  	gamma_0 = paste(pars[[2]],"(",quantile(nullCommStats$gamma_0.DAMOCLES,(1 - conf.int)/2),":",quantile(nullCommStats$gamma_0.DAMOCLES,conf.int + (1 - conf.int)/2),")",sep = "")
+  	mu = paste(pars$mu,"(",stats::quantile(nullCommStats$mu.DAMOCLES,(1 - conf.int)/2),":",stats::quantile(nullCommStats$mu.DAMOCLES,conf.int + (1 - conf.int)/2),")",sep = "")
+  	gamma_0 = paste(pars$gamma_0,"(",stats::quantile(nullCommStats$gamma_0.DAMOCLES,(1 - conf.int)/2),":",stats::quantile(nullCommStats$gamma_0.DAMOCLES,conf.int + (1 - conf.int)/2),")",sep = "")
  	} else {
   	loglik.obs.z.DAMOCLES = NA
   	loglik.obs.rank.DAMOCLES = NA
   	loglik.obs.q.DAMOCLES = NA
-  	mu = pars[[1]]
-  	gamma_0 = pars[[2]]		
+  	mu = pars$mu
+  	gamma_0 = pars$gamma_0
 	}	
   if(pchoice == 0)	
   {
@@ -259,7 +269,7 @@ DAMOCLES_bootstrap = function(
      root.state.print = root.state
   }
 	  	
-	value = c(root.state.print,mu,gamma_0,pars[[4]],pars[[5]],pars[[6]],n.obs,mntd.obs,mpd.obs,dim(nullCommStats)[1],
+	value = c(root.state.print,mu,gamma_0,pars$loglik,pars$df,pars$conv,n.obs,mntd.obs,mpd.obs,dim(nullCommStats)[1],
 	mntd.mean.RD,mntd.sd.RD,mntd.obs.z.RD,mntd.obs.rank.RD,mntd.obs.q.RD,
 	mpd.mean.RD,mpd.sd.RD,mpd.obs.z.RD,mpd.obs.rank.RD,mpd.obs.q.RD,
 	n.mean.DAMOCLES,

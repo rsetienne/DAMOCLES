@@ -1,4 +1,15 @@
-DAMOCLES_all_loglik_choosepar <- function(trparsopt,idparsopt,trparsfix,idparsfix,idparsequal,phy,patrait,edgeTList,locatenode,pchoice,methode,model)
+DAMOCLES_all_loglik_choosepar <- function(trparsopt,
+                                          idparsopt,
+                                          trparsfix,
+                                          idparsfix,
+                                          idparsequal,
+                                          phy,
+                                          patrait,
+                                          edgeTList,
+                                          locatenode,
+                                          pchoice,
+                                          methode,
+                                          model)
 {
    trpars1 = rep(0,3 * (model == -1) + 2 * (model == 0) + 10 * (model == 0.1 | model == 0.2) + 8 * (model == 1) + 12 * (model == 2 | model == 2.2))
    trpars1[idparsopt] = trparsopt
@@ -56,14 +67,13 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,idparsopt,trparsfix,idparsfi
 #' e.g. c(1,3) if mu and gamma_1 should not be optimized, but only gamma_0. In
 #' that case idparsopt must be c(2). The default is to fix all parameters not
 #' specified in idparsopt.
+#' @param idparsequal The ids of the parameters that should be set equal to the 
+#' first parameter of the same type.
 #' @param pars2 Vector of settings: \cr \code{pars2[1]} sets the relative
 #' tolerance in the parameters \cr \cr \code{pars2[2]} sets the relative
 #' tolerance in the function \cr \cr \code{pars2[3]} sets the absolute
 #' tolerance in the parameters \cr \cr \code{pars2[4]} sets the maximum number
 #' of iterations
-#' @param pchoice sets which p-value to optimize (default 0) \cr pchoice == 0
-#' correspond to the sum of p_0f + p_1f \cr pchoice == 1 correspond to p_0f \cr
-#' pchoice == 2 correspond to p_1f
 #' @param optimmethod Method used in optimization of the likelihood. Current
 #' default is 'subplex'. Alternative is 'simplex' (default of previous version)
 #' @return \item{mu}{ gives the maximum likelihood estimate of mu}
@@ -72,6 +82,15 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,idparsopt,trparsfix,idparsfi
 #' \item{loglik}{ gives the maximum loglikelihood} \item{df}{ gives the number
 #' of estimated parameters, i.e. degrees of feedom} \item{conv}{ gives a
 #' message on convergence of optimization; conv = 0 means convergence}
+#' @param pchoice sets the p-value to optimize: \cr pchoice == 0 corresponds to
+#' the sum of p_0f + p_1f \cr pchoice == 1 corresponds to p_0f \cr pchoice == 2
+#' corresponds to p_1f \cr
+#' @param edgeTList list of edge lengths that need to be succesively pruned; if
+#' not specified, it will computed using compute_edgeTList
+#' @param methode method used to solve the ODE. Either 'analytical' for matrix exponentiation
+#' or any of the numerical solvers, used in deSolve.
+#' @param model model used. Default is 0 (standard null model). Other options are 1 (binary traits)
+#' 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)
 #' @author Rampal S. Etienne
 #' @seealso \code{\link{DAMOCLES_loglik}} \code{\link{DAMOCLES_sim}}
 #' @references Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for
@@ -85,8 +104,8 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,idparsopt,trparsfix,idparsfi
 #'    pa = NWPrimates_data[[2]],
 #'    initparsopt = c(0.01,1.8),
 #'    idparsopt = c(1,2),
-#'    parsfix = c(0),
-#'    idparsfix = c(3),
+#'    parsfix = NULL,
+#'    idparsfix = NULL,
 #'    pars2 = c(1E-3,1E-4,1E-5,1000),
 #'    pchoice = 0,
 #'    optimmethod = 'subplex')
@@ -104,10 +123,10 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
    optimmethod = 'subplex',
    pchoice = 0,
    edgeTList = NULL,
-   locatenode = NULL,
    methode = 'analytical',
    model = 0)
 {
+  locatenode <- NULL
   if(model < 3)
   {
     edgeTList = DAMOCLES_check_edgeTList(phy,edgeTList)
@@ -145,12 +164,11 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
   {
      patrait = matrix(c(phy$tip.label,patrait),nrow = length(patrait),ncol = 2 + (model > 0))
   }
-  options(warn = -1)
   out2 = -1
   idpars = sort(c(idparsopt,idparsfix,idparsequal))
   if(length(idpars) != numpars)
   {
-     cat("Incorrect number of parameters specified.\n")
+     stop("Incorrect number of parameters specified.\n")
   } else {
     if(prod(idpars == (1:numpars)) != 1)
     {
@@ -174,10 +192,10 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
       }
       trparsfix = parsfix/(1 + parsfix)
       trparsfix[parsfix == Inf] = 1
-      flush.console()
+      utils::flush.console()
       initloglik = DAMOCLES_all_loglik_choosepar(trparsopt = trparsopt,trparsfix = trparsfix,idparsopt = idparsopt,idparsfix = idparsfix,idparsequal = idparsequal,phy = phy,patrait = patrait,edgeTList = edgeTList,locatenode = locatenode,methode = methode,pchoice = pchoice,model = model)
       cat("The loglikelihood for the initial parameter values is",initloglik,"\n")
-      flush.console()
+      utils::flush.console()
       if(initloglik == -Inf)
       {
          cat("The initial parameter values have a likelihood that is equal to 0 or below machine precision. Try again with different initial values.\n")
@@ -186,8 +204,22 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
       } 
       cat("Optimizing ...\n")
       optimpars = pars2
-      flush.console()                  
-      out = DDD::optimizer(optimmethod = optimmethod,optimpars = optimpars,fun = DAMOCLES_all_loglik_choosepar,trparsopt = trparsopt,trparsfix = trparsfix,idparsopt = idparsopt,idparsfix = idparsfix,idparsequal = idparsequal,phy = phy,patrait = patrait,edgeTList = edgeTList,locatenode = locatenode,methode = methode,pchoice = pchoice,model = model)
+      utils::flush.console()                  
+      out = DDD::optimizer(optimmethod = optimmethod,
+                           optimpars = optimpars,
+                           fun = DAMOCLES_all_loglik_choosepar,
+                           trparsopt = trparsopt,
+                           trparsfix = trparsfix,
+                           idparsopt = idparsopt,
+                           idparsfix = idparsfix,
+                           idparsequal = idparsequal,
+                           phy = phy,
+                           patrait = patrait,
+                           edgeTList = edgeTList,
+                           locatenode = locatenode,
+                           methode = methode,
+                           pchoice = pchoice,
+                           model = model)
       if(out$conv > 0)
       {
         cat("Optimization has not converged. Try again with different starting values.\n")

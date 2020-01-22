@@ -59,7 +59,7 @@ Simulates DAMOCLES
 
 #create random phylogeny
 library(ape)
-phy = rcoal(10)
+phy = ape::rcoal(10)
 		
 #run DAMOCLES		
 out = DAMOCLES_sim(

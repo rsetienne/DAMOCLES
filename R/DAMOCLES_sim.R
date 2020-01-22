@@ -36,7 +36,7 @@
 #' 
 #' #create random phylogeny
 #' library(ape)
-#' phy = rcoal(10)
+#' phy = ape::rcoal(10)
 #' 		
 #' #run DAMOCLES		
 #' out = DAMOCLES_sim(
@@ -89,11 +89,11 @@ DAMOCLES_sim = function(
 	keepExtinct = FALSE
 	)
 {
-  if((gamma_0 + mu) * sum(branching.times(phy)) > 100)
+  if((gamma_0 + mu) * sum(ape::branching.times(phy)) > 100)
   {
      cat('The rates are very high, so simulations will take a long time.\n')     
   }	  
-  dn = dist.nodes(phy) # find distances between nodes
+  dn = ape::dist.nodes(phy) # find distances between nodes
 	ntips = length(phy$tip.label) # number of tips
 	nbranch = 2 * ntips - 2 # number of branches
 	# create a dataframe to store presence/absence values of each edge in the tree
@@ -113,8 +113,8 @@ DAMOCLES_sim = function(
     
   if(plotit == TRUE)
   {
-     plot.phylo(phy,main = "present (red), absent (blue)")
-		 while(length(na.omit(patable$y)) < length(patable$y))
+     ape::plot.phylo(phy,main = "present (red), absent (blue)")
+		 while(length(stats::na.omit(patable$y)) < length(patable$y))
      {
 	    	for(i in 1:length(patable$y))
         {
@@ -122,7 +122,7 @@ DAMOCLES_sim = function(
            {
 			     	  focalp = patable$p[i]
 			       	focaly = patable$y[which(patable$p == focalp)]
-  		     	  if(length(na.omit(focaly)) == 2)
+  		     	  if(length(stats::na.omit(focaly)) == 2)
               {
 	    	    	   focald = which(patable$d == focalp)
 			    	 	   patable$y[focald] = (focaly[1] + focaly[2])/2
@@ -173,15 +173,15 @@ DAMOCLES_sim = function(
        {
 	     		if(patable$state[i] == 1)
            {
-		       		lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "red",lwd = 2)
+		       		graphics::lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "red",lwd = 2)
            } else {
-	            lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "blue",lwd = 2)
+              graphics::lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "blue",lwd = 2)
        	   }	
        }     
     }
 				
 		sdnorm = sqrt(br0 * wt)
-		traits = traits + rnorm(length(traits),mean = 0,sd = sdnorm) # simulate brownian trait evolution
+		traits = traits + stats::rnorm(length(traits),mean = 0,sd = sdnorm) # simulate brownian trait evolution
 				
 		if(tstep < tlastevent)
     { # if we have yet to reach the present then simulate the next event 
@@ -212,7 +212,7 @@ DAMOCLES_sim = function(
 						D[,which(pa == 1)] = NaN
             D[which(pa == 0),] = NaN
 						Dpay = D^z/(psiBranch^z + D^z)
-						Dpaynotpa = colProds(Dpay,na.rm = TRUE) * (1 - pa)
+						Dpaynotpa = matrixStats::colProds(Dpay,na.rm = TRUE) * (1 - pa)
 						Dpaynotpa = gamma_0 * Dpaynotpa
 						Itot.real = sum(Dpaynotpa)
 					} 
@@ -226,7 +226,7 @@ DAMOCLES_sim = function(
 						} else {	
 							D = abs(traitOpt - traits[extant])
 						}
-						Dpaynotpa = dexp(D,rate = phi)/dexp(0,rate = phi)
+						Dpaynotpa = stats::dexp(D,rate = phi)/stats::dexp(0,rate = phi)
 						Dpaynotpa = gamma_0 * Dpaynotpa
 						Dpaynotpa = Dpaynotpa * (1 - pa)
 						Itot.real = sum(Dpaynotpa)
@@ -236,15 +236,15 @@ DAMOCLES_sim = function(
           {  # if we have trait repulsion.......					
 						if(nTdim > 1)
             {
-							D = dist(t(traits[,extant]), method = "euclidean", diag = FALSE, upper = TRUE, p = 2)
+							D = stats::dist(t(traits[,extant]), method = "euclidean", diag = FALSE, upper = TRUE, p = 2)
 						}else{
-							D = dist(traits[extant], method = "euclidean", diag = FALSE, upper = TRUE, p = 2)
+							D = stats::dist(traits[extant], method = "euclidean", diag = FALSE, upper = TRUE, p = 2)
 						}	
 						D = as.matrix(D)
 							
 						D[which(pa == 0),] = NaN
 						Dpay = D^z/(psiTrait^z + D^z)
-						Dpaynotpa  = colProds(Dpay,na.rm = TRUE) * (1 - pa)
+						Dpaynotpa = matrixStats::colProds(Dpay,na.rm = TRUE) * (1 - pa)
 						Dpaynotpa = gamma_0 * Dpaynotpa
 						Itot.real = sum(Dpaynotpa)							
 					}
@@ -326,7 +326,7 @@ DAMOCLES_bin_trait_sim = function(
 	keepExtinct = FALSE
 	)
 {
-  dn = dist.nodes(phy) # find distances between nodes
+  dn = ape::dist.nodes(phy) # find distances between nodes
 	ntips = length(phy$tip.label) # number of tips
 	nbranch = 2 * ntips - 2 # number of branches
 	# create a dataframe to store presence/absence values of each edge in the tree
@@ -345,8 +345,8 @@ DAMOCLES_bin_trait_sim = function(
     
   if(plotit == TRUE)
   {
-    plot.phylo(phy,main = "trait 1 (red), trait 0 (blue); dark (present), light (absent)")
- 		while(length(na.omit(patable$y)) < length(patable$y))
+    ape::plot.phylo(phy,main = "trait 1 (red), trait 0 (blue); dark (present), light (absent)")
+ 		while(length(stats::na.omit(patable$y)) < length(patable$y))
     {
     	for(i in 1:length(patable$y))
       {
@@ -354,7 +354,7 @@ DAMOCLES_bin_trait_sim = function(
         {
 		    	focalp = patable$p[i]
 		    	focaly = patable$y[which(patable$p == focalp)]
-   		   	if(length(na.omit(focaly)) == 2)
+   		   	if(length(stats::na.omit(focaly)) == 2)
           {
     	  		focald = which(patable$d == focalp)
     	  	  patable$y[focald] = (focaly[1] + focaly[2])/2
@@ -410,19 +410,19 @@ DAMOCLES_bin_trait_sim = function(
        {
      	    if(patable$state[i] == 1 & patable$traits[i] == 1)
           {
-		       	 lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "darkred",lwd = 2)
+     	       graphics::lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "darkred",lwd = 2)
           }
           if(patable$state[i] == 0 & patable$traits[i] == 1)
           {
-		      	 lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "red",lwd = 2)
+             graphics::lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "red",lwd = 2)
           }
           if(patable$state[i] == 1 & patable$traits[i] == 0)
           {
-	         	 lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "blue",lwd = 2)
+             graphics::lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "blue",lwd = 2)
        	  }
           if(patable$state[i] == 0 & patable$traits[i] == 0)
           {
-          	 lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "lightblue",lwd = 2)
+             graphics::lines(c(tstep0,tstep),c(patable$y[i],patable$y[i]),col = "lightblue",lwd = 2)
           }	
      	 }     
     }

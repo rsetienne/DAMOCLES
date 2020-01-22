@@ -4,12 +4,12 @@
 \alias{DAMOCLES_bootstrap}
 \title{Phylogenetic community structure hypothesis test}
 \usage{
-DAMOCLES_bootstrap(phy = rcoal(10), pa = matrix(c(phy$tip.label,
-  sample(c(0, 1), Ntip(phy), replace = T)), nrow = Ntip(phy), ncol = 2),
-  initparsopt = c(0.1, 0.1), idparsopt = 1:length(initparsopt),
-  parsfix = 0, idparsfix = (1:3)[-idparsopt], pars2 = c(0.001, 1e-04,
-  1e-05, 1000), pchoice = 0, runs = 999, estimate_pars = FALSE,
-  conf.int = 0.95)
+DAMOCLES_bootstrap(phy = ape::rcoal(10), pa = matrix(c(phy$tip.label,
+  sample(c(0, 1), ape::Ntip(phy), replace = T)), nrow = ape::Ntip(phy),
+  ncol = 2), initparsopt = c(0.1, 0.1),
+  idparsopt = 1:length(initparsopt), parsfix = NULL,
+  idparsfix = NULL, pars2 = c(0.001, 1e-04, 1e-05, 1000),
+  pchoice = 0, runs = 999, estimate_pars = FALSE, conf.int = 0.95)
 }
 \arguments{
 \item{phy}{phylogeny in phylo format}
@@ -149,6 +149,8 @@ out = DAMOCLES_bootstrap(
    pa = NWPrimates_data[[2]],
    initparsopt = c(0.01,1.8),
    idparsopt = c(1,2),
+   idparsfix = NULL,
+   parsfix = NULL,
    pars2 = c(1E-3,1E-4,1E-5,1000),
    pchoice = 1,
    runs = 2,

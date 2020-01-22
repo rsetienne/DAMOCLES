@@ -75,8 +75,7 @@ Heracles_ImportanceSampling = function(nSamples,n,regionalSpecies,S_regional,p,p
   {
 		if(S_regional > 30)
     {
-  		 cat("The regional species pool is large. Uniform sampling will require exploring many community configurations and may exceed memory limitations. Use binomial sampling instead")
-     	 break
+  		 stop("The regional species pool is large. Uniform sampling will require exploring many community configurations and may exceed memory limitations. Use binomial sampling instead")
 		} else
     {
 			 combs = combsUse(S_regional,nSamples)
@@ -96,7 +95,7 @@ Heracles_ImportanceSampling = function(nSamples,n,regionalSpecies,S_regional,p,p
   		 	#calculate the sampling probability of the sampled community under a binomial distribution with parameters S_regional and p
 			
 	  	 	#the log probability of having local community richness S_loc is
-		   	loglikMatrix[i,2] = log(stats::dbinom(S_loc, size = S_regional, prob = p)) - (dbinom(0, size = S_regional, prob = p) + stats::dbinom(1, size = S_regional, prob = p))
+		   	loglikMatrix[i,2] = log(stats::dbinom(S_loc, size = S_regional, prob = p)) - (stats::dbinom(0, size = S_regional, prob = p) + stats::dbinom(1, size = S_regional, prob = p))
 					
 			  #the number of configurations with local richness S_loc is
 		  	loglikMatrix[i,3] = lgamma(S_regional + 1) - lgamma(S_loc + 1) - lgamma(S_regional - S_loc + 1)
@@ -125,7 +124,7 @@ Heracles_ImportanceSampling = function(nSamples,n,regionalSpecies,S_regional,p,p
 		 metricMatrix[i,5] = S_loc
 		  
 		 #calculate the loglikelihood of the sampled community under DAMOCLES
-		 loglikMatrix[i,1] = DAMOCLES_all_loglik(phy = phy,pa = pafoc,pars = parsDAM,pchoice = pchoice,edgeTList = edgeObj,analytical = TRUE, model = model,Mlist = Mlist)
+		 loglikMatrix[i,1] = DAMOCLES_all_loglik(phy = phy,pa = pafoc,pars = parsDAM,pchoice = pchoice,edgeTList = edgeObj, methode = 'analytical', model = model,Mlist = Mlist)
 				
 		#print(i)
 	}	
@@ -190,7 +189,7 @@ mntd = function(traitdist,pa)
 	if(length(present)>1)
   {
 		traitdistfoc = traitdist[present,present]
-		mntd = mean(rowMins(traitdistfoc,na.rm=TRUE))
+		mntd = mean(matrixStats::rowMins(traitdistfoc,na.rm=TRUE))
 	} else {
 		mntd = NA
 	}	
@@ -226,7 +225,7 @@ ses.mn_trait_d = function(traitdist,pa,runs)
 		if(length(present) > 1)
     {
 			 traitdistfoc = traitdist[present,present]
-			 mntd[i] = mean(rowMins(traitdistfoc,na.rm = TRUE))
+			 mntd[i] = mean(matrixStats::rowMins(traitdistfoc,na.rm = TRUE))
 		} else {
 			 mntd[i] = NA
 		}
