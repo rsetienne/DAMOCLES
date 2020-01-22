@@ -96,20 +96,6 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,
 #' @references Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for
 #' phylogenetic community structure. Ecology Letters 18: 153-163.
 #' @keywords models
-#' @examples
-#' 
-#' data(NWPrimates_data)
-#' out = DAMOCLES_ML(
-#'    phy = NWPrimates_data[[1]],
-#'    pa = NWPrimates_data[[2]],
-#'    initparsopt = c(0.01,1.8),
-#'    idparsopt = c(1,2),
-#'    parsfix = NULL,
-#'    idparsfix = NULL,
-#'    pars2 = c(1E-3,1E-4,1E-5,1000),
-#'    pchoice = 0,
-#'    optimmethod = 'subplex')
-#' 
 #' @export DAMOCLES_ML
 DAMOCLES_ML <- DAMOCLES_all_ML <- function(
    phy,
