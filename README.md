@@ -8,10 +8,6 @@ Branch|[Travis](https://travis-ci.org)|[Codecov](https://www.codecov.io)
 ---|---|---
 `master`|[![Build Status](https://travis-ci.org/rsetienne/DAMOCLES.svg?branch=master)](https://travis-ci.org/rsetienne/DAMOCLES)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=master)](https://codecov.io/github/rsetienne/DAMOCLES/branch/master)
 `develop`|[![Build Status](https://travis-ci.org/rsetienne/DAMOCLES.svg?branch=develop)](https://travis-ci.org/rsetienne/DAMOCLES)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=develop)](https://codecov.io/github/rsetienne/DAMOCLES/branch/develop)
-`shu_traits`|[![Build Status](https://travis-ci.org/rsetienne/DAMOCLES.svg?branch=shu_traits)](https://travis-ci.org/rsetienne/DAMOCLES)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=shu_traits)](https://codecov.io/github/rsetienne/DAMOCLES/branch/shu_traits)
-`rampal`|[![Build Status](https://travis-ci.org/rsetienne/DAMOCLES.svg?branch=rampal)](https://travis-ci.org/rsetienne/DAMOCLES)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=rampal)](https://codecov.io/github/rsetienne/DAMOCLES/branch/rampal)
-`multi_k`|[![Build Status](https://travis-ci.org/rsetienne/DAMOCLES.svg?branch=multi_k)](https://travis-ci.org/rsetienne/DAMOCLES)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=multi_k)](https://codecov.io/github/rsetienne/DAMOCLES/branch/multi_k)
-`luis`|[![Build Status](https://travis-ci.org/rsetienne/DAMOCLES.svg?branch=luis)](https://travis-ci.org/rsetienne/DAMOCLES)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=luis)](https://codecov.io/github/rsetienne/DAMOCLES/branch/luis)
 
 Dynamic Assembly Model of Colonization, Local Extinction and Speciation in `R`.
 
