@@ -70,7 +70,7 @@ Remotes:
 
 DAMOCLES was originally developed by Rampal S. Etienne and Alex Pigot
 
-Additionally there are others working on expanding DAMOCLES at the [TECE lab](https://github.com/tece-lab), University of Groningen are.
+Additionally there are others working on expanding DAMOCLES at the [TECE lab](https://github.com/tece-lab), University of Groningen.
 
 ## References
 
