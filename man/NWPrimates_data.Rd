@@ -5,9 +5,11 @@
 \alias{NWPrimates_data}
 \title{Dated phylogenetic tree of the New World Primates in nexus format and
 presence-absence matrix for species in Manu}
-\format{A list with two elements. The first element (\code{phy}) is the
+\format{
+A list with two elements. The first element (\code{phy}) is the
 primate phylogeny in nexus format. The second element (\code{pa}) is the
-presence-absence matrix with 94 rows and 2 columns.}
+presence-absence matrix with 94 rows and 2 columns.
+}
 \source{
 Solari, S., Pacheco, V., Luna, L., Velazco, P.M. & Patterson, B.D.
 2006 Mammals of the manu biosphere reserve. Fieldiana Zoology 110, 13-22.\cr

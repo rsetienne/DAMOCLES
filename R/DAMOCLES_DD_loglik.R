@@ -142,7 +142,7 @@ DAMOCLES_DD_integrate <- function(
      totmat <- kiplus * gamat + kimin * mumat
      totmat <- totmat - diag(rowSums(totmat))
   }
-  if(methode == 'analytical')
+  if (methode == 'analytical' || methode == 'Matix' || methode == 'expm')
   {
      difft <- abs(t - t0)
      probs <- as.vector((Matrix::expm(totmat * difft)) %*% initprobs)
@@ -264,7 +264,8 @@ DAMOCLES_DD_loglik <- function(
   pchoice = c(1,0),
   direction = 'backward',
   locatenode = NULL,
-  methode = 'lsoda'
+  methode = 'lsoda',
+  verbose = FALSE
 )
 {
   if(pars[3] < sum(as.numeric(pa[,2])))
@@ -300,11 +301,11 @@ DAMOCLES_DD_loglik <- function(
        for(i in 1:(S - 1))
        {
          probs <- DAMOCLES_DD_node(initprobs = probs, locnode = locatenode[i], direction = direction)  
-         cp <- DAISIE::checkprobs2(NULL,loglik,probs)
+         cp <- checkprobs2(NULL,loglik,probs,verbose)
          loglik <- cp[[1]]
          probs <- cp[[2]]
          probs <- DAMOCLES_DD_integrate(t0 = brts[i],t = brts[i + 1], initprobs = probs, pars = pars, direction = direction, methode = methode)
-         cp <- DAISIE::checkprobs2(NULL,loglik,probs)
+         cp <- checkprobs2(NULL,loglik,probs,verbose)
          loglik <- cp[[1]]
          probs <- cp[[2]]
        }
@@ -317,15 +318,31 @@ DAMOCLES_DD_loglik <- function(
     for(i in 1:(S - 1))
     {
       probs <- DAMOCLES_DD_integrate(t0 = brts[i],t = brts[i + 1], initprobs = probs, pars = pars, direction = direction, methode = methode)
-      cp <- DAISIE::checkprobs2(NULL,loglik,probs)
+      cp <- checkprobs2(NULL,loglik,probs,verbose)
       loglik <- cp[[1]]
       probs <- cp[[2]]
       probs <- DAMOCLES_DD_node(initprobs = probs, locnode = locatenode[i], direction = direction)  
-      cp <- DAISIE::checkprobs2(NULL,loglik,probs)
+      cp <- checkprobs2(NULL,loglik,probs,verbose)
       loglik <- cp[[1]]
       probs <- cp[[2]]
     }
     loglik <- loglik + log(pchoice %*% probs)
   }
   return(as.numeric(loglik))
+}
+
+checkprobs2 <- function(lx, loglik, probs, verbose) {
+  probs <- probs * (probs > 0)
+  if (is.na(sum(probs)) || is.nan(sum(probs))) {
+    loglik <- -Inf
+  } else if (sum(probs) <= 0) {
+    loglik <- -Inf
+  } else {
+    loglik = loglik + log(sum(probs))
+    probs = probs/sum(probs)
+  }
+  if (verbose) {
+    cat("Numerical issues encountered \n")
+  }
+  return(list(loglik, probs))
 }

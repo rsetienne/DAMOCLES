@@ -4,9 +4,25 @@
 \alias{DAMOCLES_sim}
 \title{Simulating DAMOCLES}
 \usage{
-DAMOCLES_sim(phy, gamma_0, gamma_td, mu, sigma, psiBranch, psiTrait, z,
-  phi, traitOpt, br0, br_td, nTdim, root.state, root.trait.state,
-  plotit = FALSE, keepExtinct = FALSE)
+DAMOCLES_sim(
+  phy,
+  gamma_0,
+  gamma_td,
+  mu,
+  sigma,
+  psiBranch,
+  psiTrait,
+  z,
+  phi,
+  traitOpt,
+  br0,
+  br_td,
+  nTdim,
+  root.state,
+  root.trait.state,
+  plotit = FALSE,
+  keepExtinct = FALSE
+)
 }
 \arguments{
 \item{phy}{phylogeny in phylo format}
