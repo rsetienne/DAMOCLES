@@ -9,7 +9,8 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,
                                           locatenode,
                                           pchoice,
                                           methode,
-                                          model)
+                                          model,
+                                          verbose)
 {
    trpars1 = rep(0,3 * (model == -1) + 2 * (model == 0) + 10 * (model == 0.1 | model == 0.2) + 8 * (model == 1) + 12 * (model == 2 | model == 2.2))
    trpars1[idparsopt] = trparsopt
@@ -28,10 +29,10 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,
        pars1 = trpars1/(1 - trpars1)
        if(model < 3)
        {
-         loglik = DAMOCLES_all_loglik(phy = phy,pa = patrait,pars = pars1,pchoice = pchoice,edgeTList = edgeTList,methode = methode,model = model,Mlist = NULL)
+         loglik = DAMOCLES_all_loglik(phy = phy,pa = patrait,pars = pars1,pchoice = pchoice,edgeTList = edgeTList,methode = methode,model = model,Mlist = NULL, verbose = verbose)
        } else
        {
-         loglik = DAMOCLES_DD_loglik(phy = phy,pa = patrait,pars = pars1,pchoice = pchoice,locatenode = locatenode,methode = methode)
+         loglik = DAMOCLES_DD_loglik(phy = phy,pa = patrait,pars = pars1,pchoice = pchoice,locatenode = locatenode,methode = methode,verbose = verbose)
        }
    }
    return(loglik)
@@ -69,28 +70,31 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,
 #' specified in idparsopt.
 #' @param idparsequal The ids of the parameters that should be set equal to the 
 #' first parameter of the same type.
-#' @param pars2 Vector of settings: \cr \code{pars2[1]} sets the relative
-#' tolerance in the parameters \cr \cr \code{pars2[2]} sets the relative
-#' tolerance in the function \cr \cr \code{pars2[3]} sets the absolute
-#' tolerance in the parameters \cr \cr \code{pars2[4]} sets the maximum number
-#' of iterations
+#' @param pars2 Vector of settings: \cr
+#' \code{pars2[1]} sets the relative tolerance in the parameters \cr \cr
+#' \code{pars2[2]} sets the relative tolerance in the function \cr \cr
+#' \code{pars2[3]} sets the absolute tolerance in the parameters \cr \cr
+#' \code{pars2[4]} sets the maximum number of iterations
 #' @param optimmethod Method used in optimization of the likelihood. Current
 #' default is 'subplex'. Alternative is 'simplex' (default of previous version)
 #' @return \item{mu}{ gives the maximum likelihood estimate of mu}
 #' \item{gamma_0}{ gives the maximum likelihood estimate of gamma_0}
 #' \item{gamma_1}{ gives the maximum likelihood estimate of gamma_1}
-#' \item{loglik}{ gives the maximum loglikelihood} \item{df}{ gives the number
-#' of estimated parameters, i.e. degrees of feedom} \item{conv}{ gives a
-#' message on convergence of optimization; conv = 0 means convergence}
-#' @param pchoice sets the p-value to optimize: \cr pchoice == 0 corresponds to
-#' the sum of p_0f + p_1f \cr pchoice == 1 corresponds to p_0f \cr pchoice == 2
-#' corresponds to p_1f \cr
+#' \item{loglik}{ gives the maximum loglikelihood}
+#' \item{df}{ gives the number of estimated parameters, i.e. degrees of feedom} 
+#' \item{conv}{ gives a message on convergence of optimization; conv = 0 means convergence}
+#' @param pchoice sets the p-value to optimize: \cr
+#' pchoice == 0 corresponds to the sum of p_0f + p_1f \cr
+#' pchoice == 1 corresponds to p_0f \cr
+#' pchoice == 2 corresponds to p_1f \cr
 #' @param edgeTList list of edge lengths that need to be succesively pruned; if
 #' not specified, it will computed using compute_edgeTList
-#' @param methode method used to solve the ODE. Either 'analytical' for matrix exponentiation
-#' or any of the numerical solvers, used in deSolve.
+#' @param methode method used to solve the ODE. Either 'analytical' for the analytical
+#' solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
+#' package 'expm' or any of the numerical solvers, used in deSolve.
 #' @param model model used. Default is 0 (standard null model). Other options are 1 (binary traits)
 #' 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)
+#' @param verbose Whether intermediate output should be printed. Default is FALSE.
 #' @author Rampal S. Etienne
 #' @seealso \code{\link{DAMOCLES_loglik}} \code{\link{DAMOCLES_sim}}
 #' @references Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for
@@ -110,7 +114,8 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
    pchoice = 0,
    edgeTList = NULL,
    methode = 'analytical',
-   model = 0)
+   model = 0,
+   verbose = FALSE)
 {
   locatenode <- NULL
   if(model < 3)
@@ -160,7 +165,7 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
     {
       cat("The parameters to be optimized and fixed are incoherent.\n")
     } else {
-      cat('You are running model',model,"\n")
+      cat('\nYou are running model',model,"\n")
       if(length(namepars[idparsopt]) == 0) { optstr = "nothing" } else { optstr = namepars[idparsopt] }
       cat("You are optimizing",optstr,"\n")
       if(length(namepars[idparsfix]) == 0) { fixstr = "nothing" } else { fixstr = namepars[idparsfix] }
@@ -179,7 +184,7 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
       trparsfix = parsfix/(1 + parsfix)
       trparsfix[parsfix == Inf] = 1
       utils::flush.console()
-      initloglik = DAMOCLES_all_loglik_choosepar(trparsopt = trparsopt,trparsfix = trparsfix,idparsopt = idparsopt,idparsfix = idparsfix,idparsequal = idparsequal,phy = phy,patrait = patrait,edgeTList = edgeTList,locatenode = locatenode,methode = methode,pchoice = pchoice,model = model)
+      initloglik = DAMOCLES_all_loglik_choosepar(trparsopt = trparsopt,trparsfix = trparsfix,idparsopt = idparsopt,idparsfix = idparsfix,idparsequal = idparsequal,phy = phy,patrait = patrait,edgeTList = edgeTList,locatenode = locatenode,methode = methode,pchoice = pchoice,model = model, verbose = verbose)
       cat("The loglikelihood for the initial parameter values is",initloglik,"\n")
       utils::flush.console()
       if(initloglik == -Inf)
@@ -205,7 +210,8 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
                            locatenode = locatenode,
                            methode = methode,
                            pchoice = pchoice,
-                           model = model)
+                           model = model,
+                           verbose = verbose)
       if(out$conv > 0)
       {
         cat("Optimization has not converged. Try again with different starting values.\n")
