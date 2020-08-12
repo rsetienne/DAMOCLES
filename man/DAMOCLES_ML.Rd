@@ -4,10 +4,22 @@
 \alias{DAMOCLES_ML}
 \title{Maximization of the loglikelihood under the DAMOCLES model}
 \usage{
-DAMOCLES_ML(phy, pa, initparsopt, idparsopt = 1:length(initparsopt),
-  parsfix = NULL, idparsfix = NULL, idparsequal = NULL,
-  pars2 = c(0.001, 1e-04, 1e-05, 1000), optimmethod = "subplex",
-  pchoice = 0, edgeTList = NULL, methode = "analytical", model = 0)
+DAMOCLES_ML(
+  phy,
+  pa,
+  initparsopt,
+  idparsopt = 1:length(initparsopt),
+  parsfix = NULL,
+  idparsfix = NULL,
+  idparsequal = NULL,
+  pars2 = c(0.001, 1e-04, 1e-05, 1000),
+  optimmethod = "subplex",
+  pchoice = 0,
+  edgeTList = NULL,
+  methode = "analytical",
+  model = 0,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{phy}{phylogeny in phylo format}
@@ -37,35 +49,39 @@ specified in idparsopt.}
 \item{idparsequal}{The ids of the parameters that should be set equal to the 
 first parameter of the same type.}
 
-\item{pars2}{Vector of settings: \cr \code{pars2[1]} sets the relative
-tolerance in the parameters \cr \cr \code{pars2[2]} sets the relative
-tolerance in the function \cr \cr \code{pars2[3]} sets the absolute
-tolerance in the parameters \cr \cr \code{pars2[4]} sets the maximum number
-of iterations}
+\item{pars2}{Vector of settings: \cr
+\code{pars2[1]} sets the relative tolerance in the parameters \cr \cr
+\code{pars2[2]} sets the relative tolerance in the function \cr \cr
+\code{pars2[3]} sets the absolute tolerance in the parameters \cr \cr
+\code{pars2[4]} sets the maximum number of iterations}
 
 \item{optimmethod}{Method used in optimization of the likelihood. Current
 default is 'subplex'. Alternative is 'simplex' (default of previous version)}
 
-\item{pchoice}{sets the p-value to optimize: \cr pchoice == 0 corresponds to
-the sum of p_0f + p_1f \cr pchoice == 1 corresponds to p_0f \cr pchoice == 2
-corresponds to p_1f \cr}
+\item{pchoice}{sets the p-value to optimize: \cr
+pchoice == 0 corresponds to the sum of p_0f + p_1f \cr
+pchoice == 1 corresponds to p_0f \cr
+pchoice == 2 corresponds to p_1f \cr}
 
 \item{edgeTList}{list of edge lengths that need to be succesively pruned; if
 not specified, it will computed using compute_edgeTList}
 
-\item{methode}{method used to solve the ODE. Either 'analytical' for matrix exponentiation
-or any of the numerical solvers, used in deSolve.}
+\item{methode}{method used to solve the ODE. Either 'analytical' for the analytical
+solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
+package 'expm' or any of the numerical solvers, used in deSolve.}
 
 \item{model}{model used. Default is 0 (standard null model). Other options are 1 (binary traits)
 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)}
+
+\item{verbose}{Whether intermediate output should be printed. Default is FALSE.}
 }
 \value{
 \item{mu}{ gives the maximum likelihood estimate of mu}
 \item{gamma_0}{ gives the maximum likelihood estimate of gamma_0}
 \item{gamma_1}{ gives the maximum likelihood estimate of gamma_1}
-\item{loglik}{ gives the maximum loglikelihood} \item{df}{ gives the number
-of estimated parameters, i.e. degrees of feedom} \item{conv}{ gives a
-message on convergence of optimization; conv = 0 means convergence}
+\item{loglik}{ gives the maximum loglikelihood}
+\item{df}{ gives the number of estimated parameters, i.e. degrees of feedom} 
+\item{conv}{ gives a message on convergence of optimization; conv = 0 means convergence}
 }
 \description{
 This function computes the maximum likelihood estimates of the parameters of

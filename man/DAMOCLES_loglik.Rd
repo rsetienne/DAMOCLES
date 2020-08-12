@@ -4,8 +4,17 @@
 \alias{DAMOCLES_loglik}
 \title{Likelihood for DAMOCLES model}
 \usage{
-DAMOCLES_loglik(phy, pa, pars, pchoice = 0, edgeTList = NULL,
-  methode = "analytical", model = 0, Mlist = NULL)
+DAMOCLES_loglik(
+  phy,
+  pa,
+  pars,
+  pchoice = 0,
+  edgeTList = NULL,
+  methode = "analytical",
+  model = 0,
+  Mlist = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{phy}{phylogeny in phylo format}
@@ -13,28 +22,35 @@ DAMOCLES_loglik(phy, pa, pars, pchoice = 0, edgeTList = NULL,
 \item{pa}{presence-absence table with the first column the species labels
 and the second column the presence (1) or absence (0) of the species}
 
-\item{pars}{Vector of model parameters: \cr \code{pars[1]} corresponds to mu
-(extinction rate in local community) \cr \code{pars[2]} corresponds to
-gamma_0 in formula gamma(t) = gamma_0/(1 + gamma_1 * t) where gamma(t) is
-immigration rate into local community) \cr \code{pars[3]} corresponds to
+\item{pars}{Vector of model parameters:\cr
+\code{pars[1]} corresponds to mu (extinction rate in local community)\cr
+\code{pars[2]} corresponds to gamma_0 in formula
+gamma(t) = gamma_0/(1 + gamma_1 * t) where gamma(t) is immigration rate
+into local community)\cr 
+\code{pars[3]} corresponds to
 gamma_1 in formula gamma(t) = gamma_0/(1 + gamma_1 * t) where gamma(t) is
 immigration rate into local community)}
 
-\item{pchoice}{sets the p-value to optimize: \cr pchoice == 0 corresponds to
-the sum of p_0f + p_1f \cr pchoice == 1 corresponds to p_0f \cr pchoice == 2
-corresponds to p_1f \cr}
+\item{pchoice}{sets the p-value to optimize:\cr
+pchoice == 0 corresponds to
+the sum of p_0f + p_1f\cr
+pchoice == 1 corresponds to p_0f\cr
+pchoice == 2 corresponds to p_1f\cr}
 
 \item{edgeTList}{list of edge lengths that need to be succesively pruned; if
 not specified, it will computed using compute_edgeTList}
 
-\item{methode}{method used to solve the ODE. Either 'analytical' for matrix exponentiation
-or any of the numerical solvers, used in deSolve.}
+\item{methode}{method used to solve the ODE. Either 'analytical' for the analytical
+solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
+package 'expm' or any of the numerical solvers, used in deSolve.}
 
 \item{model}{model used. Default is 0 (standard null model). Other options are 1 (binary traits)
 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)}
 
 \item{Mlist}{list of M matrices that can be specified when methode = 'analytical'. If set
 at NULL (default) and methode = 'analytical', Mlist will be computed.}
+
+\item{verbose}{Whether intermediate output should be printed. Default is FALSE.}
 }
 \value{
 The loglikelihood
