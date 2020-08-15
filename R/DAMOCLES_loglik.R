@@ -1,32 +1,32 @@
 compute_edgeTList = function(tree)
 {
   tree$node.label = NULL
-  nNode = Nnode(tree)
+  nNode = ape::Nnode(tree)
   edgeTList = vector("list", nNode)
-  ca = max(branching.times(tree))
+  ca = max(ape::branching.times(tree))
   for (i in 1:nNode)
   {
-    ntips = Ntip(tree)
+    ntips = ape::Ntip(tree)
     if(ntips > 2)
     {
-      nodeDepths = dist.nodes(tree)[(ntips + 1):(2 * ntips - 1), ntips + 1]
+      nodeDepths = ape::dist.nodes(tree)[(ntips + 1):(2 * ntips - 1), ntips + 1]
       w = which(nodeDepths == max(nodeDepths))[1]
-      toDrop1 = clade.members(as.numeric(names(nodeDepths[w])), tree, tip.labels = TRUE, include.nodes=TRUE)$tips
+      toDrop1 = caper::clade.members(as.numeric(names(nodeDepths[w])), tree, tip.labels = TRUE, include.nodes=TRUE)$tips
       toDrop2 = c(which(tree$tip.label == toDrop1[1]), which(tree$tip.label == toDrop1[2]))
-      edgeT = ca - c(dist.nodes(tree)[toDrop2, ntips + 1], nodeDepths[w])
+      edgeT = ca - c(ape::dist.nodes(tree)[toDrop2, ntips + 1], nodeDepths[w])
     } else
     {
-      nodeDescendants = clade.members.list(tree, tip.labels = TRUE)
+      nodeDescendants = caper::clade.members.list(tree, tip.labels = TRUE)
       sisterNodes = which(sapply(nodeDescendants, length) == 2)
       sisterDepths = nodeDepths[sisterNodes]
       w = which(sisterDepths == max(sisterDepths))[1]
       toDrop1 = nodeDescendants[[sisterNodes[w]]]
       toDrop2 = c(which(tree$tip.label == toDrop1[1]), which(tree$tip.label == toDrop1[2]))
-      edgeT = ca - c(dist.nodes(tree)[toDrop2, ntips + 1], sisterDepths[w])
+      edgeT = ca - c(ape::dist.nodes(tree)[toDrop2, ntips + 1], sisterDepths[w])
     }
     names(edgeT)[1:2] = toDrop1
     edgeTList[[i]] = edgeT
-    tree = suppressWarnings(drop.tip(tree, toDrop1, trim.internal = FALSE))
+    tree = suppressWarnings(ape::drop.tip(tree, toDrop1, trim.internal = FALSE))
     tree$tip.label[which(tree$tip.label == "NA")] = paste("p",i - 1, sep = "")
   }
   return(edgeTList)
@@ -96,7 +96,7 @@ DAMOCLES_all_M = function(
       M[5,1] = q2t0
       M[5,3] = mu2
       M[5,4] = q2t1
-      if(sum(is.nan(M)) > 0 | sum(M == Inf) > 0) { print(M); flush.console()}
+      if(sum(is.nan(M)) > 0 | sum(M == Inf) > 0) { print(M); utils::flush.console()}
    }
    if(model == 0.1 | model == 0.2 | model == 2.2)
    {
@@ -156,40 +156,40 @@ DAMOCLES_all_loglik_rhs = function(
    return(list(dp))
 }        
 
-DAMOCLES_all_integrate_ODE_old = function(
-   M,
-   pars,
-   p,
-   tt,
-   ca,
-   analytical = T,
-   model,
-   numvar
-   )
-{
-   if(analytical == TRUE & model != -1)
-   # TAKE ANALYTICAL SOLUTION
-   { 
-      difft = tt[2] - tt[1]
-      if(model == 0)
-      { 
-         mu = pars[1]
-         ga = pars[2]
-         difft = tt[2] - tt[1]
-         p0f = mu * p[1] + ga * p[2] + ga * (p[1] - p[2]) * exp(-difft * (ga + mu))
-         p1f = mu * p[1] + ga * p[2] - mu * (p[1] - p[2]) * exp(-difft * (ga + mu))
-         p = 1/(ga + mu) * c(p0f,p1f)
-      } else {
-         #p = expm::expAtv(A = M, v = p, t = difft)[[1]]
-         p = Matrix::expm(M * difft) %*% p
-      }
-   } else {
-      # SOLVE ODE NUMERICALLY
-      y = ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,M,model),rtol = 1E-10,atol = 1E-16, method = 'lsoda')
-      p = y[2,2:(1 + numvar)]
-   }
-   return(p)
-}
+#DAMOCLES_all_integrate_ODE_old = function(
+#   M,
+#   pars,
+#   p,
+#   tt,
+#   ca,
+#   analytical = T,
+#   model,
+#   numvar
+#   )
+#{
+#   if(analytical == TRUE & model != -1)
+#   # TAKE ANALYTICAL SOLUTION
+#   { 
+#      difft = tt[2] - tt[1]
+#      if(model == 0)
+#      { 
+#         mu = pars[1]
+#         ga = pars[2]
+#         difft = tt[2] - tt[1]
+#         p0f = mu * p[1] + ga * p[2] + ga * (p[1] - p[2]) * exp(-difft * (ga + mu))
+#         p1f = mu * p[1] + ga * p[2] - mu * (p[1] - p[2]) * exp(-difft * (ga + mu))
+#         p = 1/(ga + mu) * c(p0f,p1f)
+#      } else {
+#         #p = expm::expAtv(A = M, v = p, t = difft)[[1]]
+#         p = Matrix::expm(M * difft) %*% p
+#      }
+#   } else {
+#      # SOLVE ODE NUMERICALLY
+#      y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,M,model),rtol = 1E-10,atol = 1E-16, method = 'lsoda')
+#      p = y[2,2:(1 + numvar)]
+#   }
+#   return(p)
+#}
 
 DAMOCLES_check_Mlist = function(Mlist,pars,model,methode = 'analytical')
 {
@@ -224,7 +224,7 @@ DAMOCLES_all_integrate_ODE = function(
    )
 {
    Mlist = DAMOCLES_check_Mlist(Mlist,pars,model,methode)
-   if(methode == 'analytical' & model != -1)
+   if ((methode == 'analytical' | methode == 'expm' | methode == 'Matrix') & model != -1)
    # TAKE ANALYTICAL SOLUTION
    { 
       difft = tt[2] - tt[1]
@@ -236,9 +236,9 @@ DAMOCLES_all_integrate_ODE = function(
          p0f = mu * p[1] + ga * p[2] + ga * (p[1] - p[2]) * exp(-difft * (ga + mu))
          p1f = mu * p[1] + ga * p[2] - mu * (p[1] - p[2]) * exp(-difft * (ga + mu))
          p = 1/(ga + mu) * c(p0f,p1f)
-      } else {
-         #p = expm::expAtv(A = M, v = p, t = difft)[[1]]
-         #p = Matrix::expm(M * difft) %*% p
+      } else if (methode == 'expm') p <- expm::expAtv(A = Mlist$M, v = p, t = difft)[[1]]
+        else if (methode == 'Matrix') p <- Matrix::expm(Mlist$M * difft) %*% p
+        else if (methode == 'analytical') {
          p = (Mlist$S %*% (diag(exp(Mlist$eigs * difft))) %*% Mlist$invS) %*% p
          if(prod(abs(Im(p)) > 1E-3 * abs(Re(p))))
          {
@@ -248,7 +248,7 @@ DAMOCLES_all_integrate_ODE = function(
       }
    } else {
       # SOLVE ODE NUMERICALLY
-      y = ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,Mlist$M,model),rtol = 1E-10,atol = 1E-16, method = methode)
+      y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,Mlist$M,model),rtol = 1E-10,atol = 1E-16, method = methode)
       p = y[2,2:(1 + numvar)]
    }
    return(p)
@@ -351,6 +351,63 @@ DAMOCLES_check_edgeTList = function(phy,edgeTList)
   return(edgeTList)
 }
 
+#' Likelihood for DAMOCLES model
+#' 
+#' Computes likelihood for the presence-absence data of species in a local
+#' community for a given phylogeny of species in the region.
+#' 
+#' 
+#' @param phy phylogeny in phylo format
+#' @param pa presence-absence table with the first column the species labels
+#' and the second column the presence (1) or absence (0) of the species
+#' @param pars Vector of model parameters:\cr
+#' \code{pars[1]} corresponds to mu (extinction rate in local community)\cr
+#' \code{pars[2]} corresponds to gamma_0 in formula
+#' gamma(t) = gamma_0/(1 + gamma_1 * t) where gamma(t) is immigration rate
+#' into local community)\cr 
+#' \code{pars[3]} corresponds to
+#' gamma_1 in formula gamma(t) = gamma_0/(1 + gamma_1 * t) where gamma(t) is
+#' immigration rate into local community)
+#' @param pchoice sets the p-value to optimize:\cr
+#' pchoice == 0 corresponds to
+#' the sum of p_0f + p_1f\cr
+#' pchoice == 1 corresponds to p_0f\cr
+#' pchoice == 2 corresponds to p_1f\cr
+#' @param edgeTList list of edge lengths that need to be succesively pruned; if
+#' not specified, it will computed using compute_edgeTList
+#' @param methode method used to solve the ODE. Either 'analytical' for the analytical
+#' solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
+#' package 'expm' or any of the numerical solvers, used in deSolve.
+#' @param model model used. Default is 0 (standard null model). Other options are 1 (binary traits)
+#' 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)
+#' @param Mlist list of M matrices that can be specified when methode = 'analytical'. If set
+#' at NULL (default) and methode = 'analytical', Mlist will be computed.
+#' @param verbose Whether intermediate output should be printed. Default is FALSE.
+#' @return The loglikelihood
+#' @author Rampal S. Etienne
+#' @seealso \code{\link{DAMOCLES_ML}} \code{\link{DAMOCLES_sim}}
+#' @references Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for
+#' phylogenetic community structure. Ecology Letters 18: 153-163.
+#' @keywords models
+#' @examples
+#' 
+#'   #TEST IT WORKS
+#'   library(ape)
+#'   phy = ape::rcoal(100)
+#'   pars = c(0.5,0.1,0.1)
+#'   pa = rbinom(100,c(0,1),0.5)
+#'   pa = matrix(c(phy$tip.label,pa),nrow = length(phy$tip.label),ncol = 2)
+#' 
+#'   # - without a root edge
+#'   loglik = DAMOCLES_loglik(phy,pa,pars)
+#'   loglik
+#' 
+#'   # - with a root edge
+#'   phy$root.edge = 2
+#'   loglik = DAMOCLES_loglik(phy,pa,pars)
+#'   loglik
+#' 
+#' @export DAMOCLES_loglik
 DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
    phy,
    pa,
@@ -359,24 +416,10 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
    edgeTList = NULL,
    methode = 'analytical',
    model = 0, 
-   Mlist = NULL
+   Mlist = NULL,
+   verbose = FALSE
    )
 {
-#DAMOCLES_all_loglik computes the likelihood of the DAMOCLES model given a tree and parameters.
-#phy = phylogenetic tree, in nexus-format
-#pa = patrait patrait = presence-absence table, first column contains tip labels, second column presence (1) or absence (0), third column contains trait value
-#pars = set of parameters
-#pchoice = choice which probability to optimize:
-# pchoice == 0, optimize sum of everything
-# pchoice == 1, optimize probability conditional on ancestor being absent
-# pchoice == 2, optimize probability conditional on ancestor being present
-# pchoice == a vector; use the specified weights  
-#edgeTList = list of succesive edges to prune; if NULL it is computed using compute_edgeTList(phy)
-# model == 0, the standard null model
-# model =- 1, the model with binary traits
-# model == 2, the model with trinary environmental trait
-# model == 3, the model with diversity-dependent colonization  
-
   edgeTList = DAMOCLES_check_edgeTList(phy,edgeTList)
   Mlist = DAMOCLES_check_Mlist(Mlist,pars,model,methode)
   patrait = data.frame(as.character(pa[,1]),matrix(as.numeric(pa[,2:ncol(pa)]),ncol = ncol(pa) - 1,byrow = FALSE))
@@ -463,10 +506,10 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
         w2[j] = which(patraittable[,1] == names(branchesTimes)[j])
         p = as.numeric(patraittable[w2[j],2:(numvar + 1)])
         p = DAMOCLES_all_integrate_ODE(Mlist,pars,p,tt,ca,methode,model,numvar)
-        if(min(p) < 0 || is.nan(min(p)))
+        if(min(p) < 0 | is.nan(min(p)))
         {
           cat('Numerical problems: negative probabilities encountered. Results may not be reliable.\n')
-          flush.console()
+          utils::flush.console()
         }
         p[p < 0] = 0
         p[is.nan(p)] = 0
@@ -474,7 +517,7 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
         if(sump == 0)
         {
           cat('Numerical problems: all probabilities are zero or negative!\n')
-          flush.console()
+          utils::flush.console()
           loglik = -Inf
           return(loglik)       
         }
@@ -489,13 +532,13 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
      if(min(pnew) < 0 || is.nan(min(pnew)))
      {
        cat('Numerical problems: negative probabilities encountered. Results may not be reliable.\n')
-       flush.console()
+       utils::flush.console()
        pnew[pnew < 0] = 0
        pnew[is.nan(pnew)] = 0
        if(sum(pnew) == 0)
        {
          cat('Numerical problems: all probabilities are zero or negative!\n')
-         flush.console()
+         utils::flush.console()
          loglik = -Inf
          return(loglik)       
        }
@@ -526,13 +569,14 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
 	}  
   #if(min(patraittable[2:(numvar + 1)]) < 0) { print(as.numeric(patraittable[2:(numvar + 1)])) }
 	loglik = loglik + log(sum(pchoicevec * as.numeric(patraittable[2:(numvar + 1)])))
- 
-	#s1 = sprintf('Parameters:')
-	#s2 = sprintf('%f ',pars)
-	#s3 = sprintf('\nLoglikelihood: %f',loglik)
-	#cat(s1,s2,s3,"\n",sep = "")
-	#flush.console()
-	return(loglik)
+  if (verbose) { 
+    s1 = sprintf('Parameters:')
+    s2 = sprintf('%f ',pars)
+    s3 = sprintf('\nLoglikelihood: %f',loglik)
+    cat(s1,s2,s3,"\n",sep = "")
+    utils::flush.console()
+  }
+  return(loglik)
 }
 
 DAMOCLES_all_loglik_rh = function(

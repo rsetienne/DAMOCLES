@@ -64,31 +64,31 @@ DAMOCLES_DD_loglik_rhs <- function(
   return(list(dp))
 }
 
-DAMOCLES_DD_odeintr <- function(
-  initprobs,
-  t0,
-  t,
-  totmat,
-  methode
-  )
-{
-   Sys.setenv( "PKG_CXXFLAGS"="-std=c++11" )
-   sys <- '
-for(int i = 0; i != N; ++i)
-{
-  dxdt[i] = 0;
-  for (int j = 0; j != N; ++j)
-  dxdt[i] += pars[i * N + j] * x[j];
-}
-'
-   n_pars <- length(initprobs)
-   compile_sys("DAMOCLES_DD_branch", sys, n_pars^2, sys_dim = n_pars,atol = 1e-16, rtol = 1e-16, method = methode)
-   totvec <- t(totmat)
-   dim(totvec) <- c(n_pars^2,1)
-   DAMOCLES_DD_branch_set_params(totvec)
-   probs <- as.numeric(DAMOCLES_DD_branch(initprobs,t,(t - t0)/10,t0)[11,2:(1 + n_pars)])
-   return(probs)
-}
+#DAMOCLES_DD_odeintr <- function(
+#  initprobs,
+#  t0,
+#  t,
+#  totmat,
+#  methode
+#  )
+#{
+#   Sys.setenv( "PKG_CXXFLAGS"="-std=c++11" )
+#   sys <- '
+#for(int i = 0; i != N; ++i)
+#{
+#  dxdt[i] = 0;
+#  for (int j = 0; j != N; ++j)
+#  dxdt[i] += pars[i * N + j] * x[j];
+#}
+#'
+#   n_pars <- length(initprobs)
+#   odeintr::compile_sys("DAMOCLES_DD_branch", sys, n_pars^2, sys_dim = n_pars,atol = 1e-16, rtol = 1e-16, method = methode)
+#   totvec <- t(totmat)
+#   dim(totvec) <- c(n_pars^2,1)
+#   DAMOCLES_DD_branch_set_params(totvec)
+#   probs <- as.numeric(DAMOCLES_DD_branch(initprobs,t,(t - t0)/10,t0)[11,2:(1 + n_pars)])
+#   return(probs)
+#}
 
 DAMOCLES_DD_FORTRAN <- function(
   initprobs,
@@ -104,7 +104,7 @@ DAMOCLES_DD_FORTRAN <- function(
   n_pars <- length(initprobs)
   totvec <- t(totmat)
   dim(totvec) <- c(n_pars^2,1)
-  probs <- ode(y = initprobs, parms = c(n_pars + 0.), rpar = totvec, 
+  probs <- deSolve::ode(y = initprobs, parms = c(n_pars + 0.), rpar = totvec, 
              times = c(t0,t), func = "runmod", initfunc = "initmod", 
              ynames = c("SV"), dimens = n_pars^2, nout = 1, outnames = c("Sum"), 
              dllname = "DAMOCLES_DD_loglik_rhs",method = methode)[2,2:(n_pars + 1)]
@@ -142,19 +142,20 @@ DAMOCLES_DD_integrate <- function(
      totmat <- kiplus * gamat + kimin * mumat
      totmat <- totmat - diag(rowSums(totmat))
   }
-  if(methode == 'analytical')
+  if (methode == 'analytical' || methode == 'Matix' || methode == 'expm')
   {
      difft <- abs(t - t0)
      probs <- as.vector((Matrix::expm(totmat * difft)) %*% initprobs)
   } else if(is.element(methode,c('euler','rk4','rk54','rk54_a','rk5','rk5_a','rk5_i','rk78','rk78_a','abN','abmN','bs','bsd')))
   {
-     probs <- DAMOCLES_DD_odeintr(initprobs = initprobs, t0 = t0, t = t, totmat = totmat, methode = methode)
+     stop('odeintr methods are no longer available.')
+     #probs <- DAMOCLES_DD_odeintr(initprobs = initprobs, t0 = t0, t = t, totmat = totmat, methode = methode)
   } else if(methode == 'experimental')
   {
      probs <- DAMOCLES_DD_FORTRAN(initprobs = initprobs, t0 = t0, t = t, totmat = totmat, methode = 'lsoda')
   } else
   {
-     probs <- ode(y = initprobs,times = c(t0,t), func = DAMOCLES_DD_loglik_rhs, parms = totmat, method = methode,rtol = 1E-10,atol = 1E-16)[2,2:(1 + dime)]
+     probs <- deSolve::ode(y = initprobs,times = c(t0,t), func = DAMOCLES_DD_loglik_rhs, parms = totmat, method = methode,rtol = 1E-10,atol = 1E-16)[2,2:(1 + dime)]
   }
   return(probs)
 }
@@ -162,28 +163,28 @@ DAMOCLES_DD_integrate <- function(
 locate_node <- function(phy)
 {
   phy$node.label <- NULL
-  nNode <- Nnode(phy)
+  nNode <- ape::Nnode(phy)
   nodeorder <- rep(0,nNode)
   oldlabels <- phy$tip.label
-  phy$tip.label <- as.character(1:Ntip(phy))
+  phy$tip.label <- as.character(1:ape::Ntip(phy))
   for (i in 1:nNode)
   {
-    ntips <- Ntip(phy)
+    ntips <- ape::Ntip(phy)
     if(ntips > 2)
     {
-      nodeDepths <- dist.nodes(phy)[(ntips + 1):(2 * ntips - 1), ntips + 1]
+      nodeDepths <- ape::dist.nodes(phy)[(ntips + 1):(2 * ntips - 1), ntips + 1]
       w = which(nodeDepths == max(nodeDepths))[1]
-      toDrop <- clade.members(as.numeric(names(nodeDepths[w])), phy, tip.labels = TRUE, include.nodes = TRUE)$tips
+      toDrop <- caper::clade.members(as.numeric(names(nodeDepths[w])), phy, tip.labels = TRUE, include.nodes = TRUE)$tips
     } else
     {
-      nodeDescendants <- clade.members.list(phy, tip.labels = TRUE)
+      nodeDescendants <- caper::clade.members.list(phy, tip.labels = TRUE)
       sisterNodes <- which(sapply(nodeDescendants, length) == 2)
       sisterDepths <- nodeDepths[sisterNodes]
       w <- which(sisterDepths == max(sisterDepths))[1]
       toDrop <- nodeDescendants[[sisterNodes[w]]]
     }
     nodeorder[i] <- min(as.numeric(toDrop))
-    phy <- suppressWarnings(drop.tip(phy, toDrop, trim.internal = FALSE))
+    phy <- suppressWarnings(ape::drop.tip(phy, toDrop, trim.internal = FALSE))
     phy$tip.label[which(phy$tip.label == "NA")] <- paste(nodeorder[i], sep = "")
     if(nodeorder[i] < (ntips - 1))
     {
@@ -263,7 +264,8 @@ DAMOCLES_DD_loglik <- function(
   pchoice = c(1,0),
   direction = 'backward',
   locatenode = NULL,
-  methode = 'lsoda'
+  methode = 'lsoda',
+  verbose = FALSE
 )
 {
   if(pars[3] < sum(as.numeric(pa[,2])))
@@ -276,13 +278,13 @@ DAMOCLES_DD_loglik <- function(
   {
     pchoice = (pchoice == 0) * c(0.5,0.5) + (pchoice == 1) * c(1,0) + (pchoice == 2) * c(0,1)
   }
-  S <- Ntip(phy)
+  S <- ape::Ntip(phy)
   pastate <- rep(0,S) 
   for(i in 1:S)
   {
     pastate[i] <- as.numeric(pa[which(pa[,1] == phy$tip.label[i]),2])
   }
-  brts <- as.numeric(sort(branching.times(phy)))
+  brts <- as.numeric(sort(ape::branching.times(phy)))
   loglik <- 0
   if(brts[1] != 0)
   {
@@ -299,11 +301,11 @@ DAMOCLES_DD_loglik <- function(
        for(i in 1:(S - 1))
        {
          probs <- DAMOCLES_DD_node(initprobs = probs, locnode = locatenode[i], direction = direction)  
-         cp <- DAISIE:::checkprobs2(NULL,loglik,probs)
+         cp <- checkprobs2(NULL,loglik,probs,verbose)
          loglik <- cp[[1]]
          probs <- cp[[2]]
          probs <- DAMOCLES_DD_integrate(t0 = brts[i],t = brts[i + 1], initprobs = probs, pars = pars, direction = direction, methode = methode)
-         cp <- DAISIE:::checkprobs2(NULL,loglik,probs)
+         cp <- checkprobs2(NULL,loglik,probs,verbose)
          loglik <- cp[[1]]
          probs <- cp[[2]]
        }
@@ -316,15 +318,31 @@ DAMOCLES_DD_loglik <- function(
     for(i in 1:(S - 1))
     {
       probs <- DAMOCLES_DD_integrate(t0 = brts[i],t = brts[i + 1], initprobs = probs, pars = pars, direction = direction, methode = methode)
-      cp <- DAISIE:::checkprobs2(NULL,loglik,probs)
+      cp <- checkprobs2(NULL,loglik,probs,verbose)
       loglik <- cp[[1]]
       probs <- cp[[2]]
       probs <- DAMOCLES_DD_node(initprobs = probs, locnode = locatenode[i], direction = direction)  
-      cp <- DAISIE:::checkprobs2(NULL,loglik,probs)
+      cp <- checkprobs2(NULL,loglik,probs,verbose)
       loglik <- cp[[1]]
       probs <- cp[[2]]
     }
     loglik <- loglik + log(pchoice %*% probs)
   }
   return(as.numeric(loglik))
+}
+
+checkprobs2 <- function(lx, loglik, probs, verbose) {
+  probs <- probs * (probs > 0)
+  if (is.na(sum(probs)) || is.nan(sum(probs))) {
+    loglik <- -Inf
+  } else if (sum(probs) <= 0) {
+    loglik <- -Inf
+  } else {
+    loglik = loglik + log(sum(probs))
+    probs = probs/sum(probs)
+  }
+  if (verbose) {
+    cat("Numerical issues encountered \n")
+  }
+  return(list(loglik, probs))
 }
