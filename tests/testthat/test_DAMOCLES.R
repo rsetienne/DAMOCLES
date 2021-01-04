@@ -2,7 +2,7 @@
 #' 
 #' context("DAMOCLES")
 
-test_that("DAMOCLES_ML", {
+test_that("DAMOCLES_ML works", {
   data(NWPrimates_data)
   out <- DAMOCLES_ML(
     phy = NWPrimates_data[[1]],
