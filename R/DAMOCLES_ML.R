@@ -94,6 +94,8 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,
 #' package 'expm' or any of the numerical solvers, used in deSolve.
 #' @param model model used. Default is 0 (standard null model). Other options are 1 (binary traits)
 #' 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)
+#' @param num_cycles the number of cycles of opimization. If set at Inf, it will
+#' do as many cycles as needed to meet the tolerance set for the target function.
 #' @param verbose Whether intermediate output should be printed. Default is FALSE.
 #' @author Rampal S. Etienne
 #' @seealso \code{\link{DAMOCLES_loglik}} \code{\link{DAMOCLES_sim}}
@@ -115,6 +117,7 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
    edgeTList = NULL,
    methode = 'analytical',
    model = 0,
+   num_cycles = 1,
    verbose = FALSE)
 {
   locatenode <- NULL
@@ -211,7 +214,8 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
                            methode = methode,
                            pchoice = pchoice,
                            model = model,
-                           verbose = verbose)
+                           verbose = verbose,
+                           num_cycles = num_cycles)
       if(out$conv > 0)
       {
         cat("Optimization has not converged. Try again with different starting values.\n")
