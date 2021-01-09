@@ -38,8 +38,7 @@ o.dectobin = function(y,ly = 0)
 
 combsUse = function(nRegional,nSample = 1000000)
 { 
-	nposs = 2^nRegional
-	nposs = nposs - 1
+	nposs = 2^nRegional - 1
 	combs = DDD::sample2(0:nposs,size = nSample,replace = TRUE)
 	return(combs)
 }	
@@ -81,6 +80,11 @@ Heracles_ImportanceSampling <- function(nSamples,n,regionalSpecies,S_regional,p,
 			 combs <- combsUse(S_regional,nSamples)
 		}
 	}
+	
+	if(samptype == 'fixed')
+	{
+	  S_loc <- sum(as.numeric(pa[,2]))
+	}
 		
  	pafoc <- pa
 	pafoc[,2] <- as.character(rep(0,n))
@@ -94,8 +98,8 @@ Heracles_ImportanceSampling <- function(nSamples,n,regionalSpecies,S_regional,p,
      		sam <- sample(c(rep(1,S_loc),rep(0,S_regional - S_loc)))
   		 	#calculate the sampling probability of the sampled community under a binomial distribution with parameters S_regional and p
 			
-	  	 	#the log probability of having local community richness S_loc is
-		   	loglikMatrix[i,2] <- log(stats::dbinom(S_loc, size = S_regional, prob = p)) - (stats::dbinom(0, size = S_regional, prob = p) + stats::dbinom(1, size = S_regional, prob = p))
+	  	 	#the log probability of having local community richness S_loc conditional on this being larger than 1 is
+		   	loglikMatrix[i,2] <- stats::dbinom(S_loc, size = S_regional, prob = p, log = TRUE) - stats::pbinom(1, size = S_regional, prob = p, lower.tail = FALSE, log.p = TRUE)
 					
 			  #the number of configurations with local richness S_loc is
 		  	loglikMatrix[i,3] <- lgamma(S_regional + 1) - lgamma(S_loc + 1) - lgamma(S_regional - S_loc + 1)
@@ -103,8 +107,12 @@ Heracles_ImportanceSampling <- function(nSamples,n,regionalSpecies,S_regional,p,
 	   if(samptype == 'uniform')
      {
     		sam <- o.dectobin(combs[i],S_regional)
-      	S_loc <- sum(as.numeric(pa[,2]))
-     }  
+    		S_loc <- sum(sam)
+	   }  
+	   if(samptype == 'fixed')
+	   {
+  	    sam <- sample(c(rep(1,S_loc),rep(0,S_regional - S_loc))) 
+	   }
 		 
 	   #enter the sampled local community into our pa dataframe 	
 		 pafoc[regionalSpecies,2] <- sam
@@ -189,7 +197,7 @@ DAMOCLES_mntd = function(traitdist,pa)
 	if(length(present)>1)
   {
 		traitdistfoc = traitdist[present,present]
-		mntd = mean(matrixStats::rowMins(traitdistfoc,na.rm=TRUE))
+		mntd = mean(matrixStats::rowMins(traitdistfoc,na.rm = TRUE))
 	} else {
 		mntd = NA
 	}	
@@ -204,7 +212,7 @@ DAMOCLES_mtd = function(traitdist,pa)
 	if(length(present)>1)
   {
 		traitdistfoc = traitdist[present,present]
-		mtd = mean(rowMeans(traitdistfoc,na.rm=TRUE))
+		mtd = mean(rowMeans(traitdistfoc,na.rm = TRUE))
 	} else {
 		mtd = NA
 	}	
