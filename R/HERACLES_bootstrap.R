@@ -46,10 +46,74 @@ combsUse = function(nRegional,nSample = 1000000)
 ######################################################################################################################################
 ######################################################################################################################################
 
-#this now includes the option to calculate trait based metrics of phylogenetic structure by setting traitMetric = TRUE and including traitdist, a trait distance matrix
-Heracles_ImportanceSampling <- function(nSamples,n,regionalSpecies,S_regional,p,pa,phy,phydist,parsDAM,Mlist,model,pchoice,samptype,edgeObj,traitMetric,traitdist)
+#' Importance Sampling from the HERACLES model
+#' 
+#' Computes likelihood and metrics for randomly sampled presence-absence data of species in a local
+#' community for a given phylogeny of species in the region.
+#' 
+#' @param nsamples The number of samples used in importance sampling
+#' @param n
+#' @param regionalSpecies The list of species present in the regional community (SP)
+#' @param S_regional The number of species in the regional species pool
+#' @param p The probability used for the binomial distribution
+#' @param pa presence-absence table with the first column the species labels
+#' and the second column the presence (1) or absence (0) of the species
+#' @param phy phylogeny in phylo format
+#' @param phydist TBD
+#' @param parsDAM Vector of model parameters:\cr
+#' \code{pars[1]} corresponds to mu (extinction rate in local community)\cr
+#' \code{pars[2]} corresponds to gamma_0 in formula
+#' gamma(t) = gamma_0/(1 + gamma_1 * t) where gamma(t) is immigration rate
+#' into local community)\cr 
+#' \code{pars[3]} corresponds to
+#' gamma_1 in formula gamma(t) = gamma_0/(1 + gamma_1 * t) where gamma(t) is
+#' immigration rate into local community)
+#' @param Mlist list of M matrices that can be specified when methode = 'analytical'. If set
+#' at NULL (default) and methode = 'analytical', Mlist will be computed.
+#' @param model model used. Default is 0 (standard null model). Other options are 1 (binary traits)
+#' 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)
+#' @param pchoice sets the p-value to optimize:\cr
+#' pchoice == 0 corresponds to
+#' the sum of p_0f + p_1f\cr
+#' pchoice == 1 corresponds to p_0f\cr
+#' pchoice == 2 corresponds to p_1f\cr
+#' @param samptype Type of sampling distribution, can be either 'uniform' or 'binomial' in which case
+#' the local samples are uniformly or binomially generated, with the local diversity being a stochastic
+#' variable, or 'fixed' in which case the observed local diversity is used and configurations consistent
+#' with this diversity are sampled
+#' @param edgeObj list of edge lengths that need to be successively pruned; if
+#' not specified, it will computed using compute_edgeTList
+#' @param methode method used to solve the ODE. Either 'analytical' for the analytical
+#' solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
+#' package 'expm' or any of the numerical solvers, used in deSolve.
+#' @return A list containing attributes of the loglikelihood and importance sampling, and
+#' of the metrics (mntd and mpd, and TBD)
+#' @author Rampal S. Etienne & Alex L. Pigot
+#' @references Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for
+#' phylogenetic community structure. Ecology Letters 18: 153-163.
+#' @keywords models
+#' @examples TBD
+#' @export HERACLES_ImportanceSampling
+Heracles_ImportanceSampling <- function(nSamples,
+                                        n,
+                                        regionalSpecies,
+                                        S_regional,
+                                        p = n/S_regional,
+                                        pa,
+                                        phy,
+                                        phydist,
+                                        parsDAM,
+                                        Mlist = NULL,
+                                        model,
+                                        pchoice,
+                                        samptype,
+                                        edgeObj = NULL,
+                                        methode = 'analytical',
+                                        traitdist = NULL)
 {	
-	#create a matrix to store metrics of community structure
+  edgeObj <- DAMOCLES_check_edgeTList(phy,edgeObj)
+  Mlist <- DAMOCLES_check_Mlist(Mlist,parsDAM,model,methode)
+  #create a matrix to store metrics of community structure
 	#create a matrix to store the loglikelihood of each community and its sampling probability  
 	loglikMatrix <- matrix(ncol = 1 + 2 * (samptype == 'binomial'),nrow = nSamples)
 	metricMatrix <- matrix(ncol = 5,nrow = nSamples)
@@ -122,7 +186,7 @@ Heracles_ImportanceSampling <- function(nSamples,n,regionalSpecies,S_regional,p,
 		 metricMatrix[i,1] <- picante::mntd(DAMOCLES.samp,phydist)
 		 metricMatrix[i,2] <- picante::mpd(DAMOCLES.samp,phydist)
 		
-		 if(traitMetric == TRUE)
+		 if(!is.null(traitdist))
      {
         #calculate trait metrics for the sampled community	
 		    metricMatrix[i,3] <- DAMOCLES_mntd(traitdist,pafoc)
@@ -132,7 +196,7 @@ Heracles_ImportanceSampling <- function(nSamples,n,regionalSpecies,S_regional,p,
 		 metricMatrix[i,5] <- S_loc
 		  
 		 #calculate the loglikelihood of the sampled community under DAMOCLES
-		 loglikMatrix[i,1] <- DAMOCLES_all_loglik(phy = phy,pa = pafoc,pars = parsDAM,pchoice = pchoice,edgeTList = edgeObj, methode = 'analytical', model = model,Mlist = Mlist)
+		 loglikMatrix[i,1] <- DAMOCLES_all_loglik(phy = phy,pa = pafoc,pars = parsDAM,pchoice = pchoice,edgeTList = edgeObj, methode = methode, model = model,Mlist = Mlist)
 				
 		#print(i)
 	}	
