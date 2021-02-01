@@ -71,7 +71,7 @@ root.state, root.trait.state, plotit = FALSE,keepExtinct = FALSE)
      #transition rates
      rates = c(mu_1,mu_2,gamma_1,gamma_2,q_0_to_2,q_2_to_0,q_1_to_2,q_2_to_1)
      
-     traitStateComb = HERACLES_find_trait_stait_combinations(pa,paTrait)
+     traitStateComb = HERACLES_find_trait_state_combinations(pa,paTrait)
           
      #gillespie algorithm    
      rates.real = (rates * traitStateComb)
