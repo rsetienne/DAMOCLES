@@ -51,7 +51,7 @@ combsUse = function(nRegional,nSample = 1000000)
 #' Computes likelihood and metrics for randomly sampled presence-absence data of species in a local
 #' community for a given phylogeny of species in the region.
 #' 
-#' @param nsamples The number of samples used in importance sampling
+#' @param nSamples The number of samples used in importance sampling
 #' @param n The number of species in the local community
 #' @param regionalSpecies The list of species present in the regional community (SP)
 #' @param S_regional The number of species in the regional species pool
@@ -86,6 +86,7 @@ combsUse = function(nRegional,nSample = 1000000)
 #' @param methode method used to solve the ODE. Either 'analytical' for the analytical
 #' solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
 #' package 'expm' or any of the numerical solvers, used in deSolve.
+#' @param traitdist TBD
 #' @return A list containing attributes of the loglikelihood and importance sampling, and
 #' of the metrics (mntd and mpd, and TBD)
 #' @author Rampal S. Etienne & Alex L. Pigot
