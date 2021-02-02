@@ -18,6 +18,7 @@ DAMOCLES_ML(
   edgeTList = NULL,
   methode = "analytical",
   model = 0,
+  num_cycles = 1,
   verbose = FALSE
 )
 }
@@ -72,6 +73,9 @@ package 'expm' or any of the numerical solvers, used in deSolve.}
 
 \item{model}{model used. Default is 0 (standard null model). Other options are 1 (binary traits)
 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)}
+
+\item{num_cycles}{the number of cycles of opimization. If set at Inf, it will
+do as many cycles as needed to meet the tolerance set for the target function.}
 
 \item{verbose}{Whether intermediate output should be printed. Default is FALSE.}
 }

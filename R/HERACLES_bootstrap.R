@@ -52,7 +52,7 @@ combsUse = function(nRegional,nSample = 1000000)
 #' community for a given phylogeny of species in the region.
 #' 
 #' @param nsamples The number of samples used in importance sampling
-#' @param n
+#' @param n The number of species in the local community
 #' @param regionalSpecies The list of species present in the regional community (SP)
 #' @param S_regional The number of species in the regional species pool
 #' @param p The probability used for the binomial distribution
@@ -94,7 +94,7 @@ combsUse = function(nRegional,nSample = 1000000)
 #' @keywords models
 #' @examples TBD
 #' @export HERACLES_ImportanceSampling
-Heracles_ImportanceSampling <- function(nSamples,
+HERACLES_ImportanceSampling <- Heracles_ImportanceSampling <- function(nSamples,
                                         n,
                                         regionalSpecies,
                                         S_regional,
