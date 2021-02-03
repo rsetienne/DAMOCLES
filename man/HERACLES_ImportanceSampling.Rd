@@ -85,7 +85,7 @@ Computes likelihood and metrics for randomly sampled presence-absence data of sp
 community for a given phylogeny of species in the region.
 }
 \examples{
-TBD
+cat('No examples yet') #TBD
 }
 \references{
 Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for
