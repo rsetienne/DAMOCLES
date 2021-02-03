@@ -93,7 +93,7 @@ combsUse = function(nRegional,nSample = 1000000)
 #' @references Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for
 #' phylogenetic community structure. Ecology Letters 18: 153-163.
 #' @keywords models
-#' @examples TBD
+#' @examples cat('No examples yet') #TBD
 #' @export HERACLES_ImportanceSampling
 HERACLES_ImportanceSampling <- Heracles_ImportanceSampling <- function(nSamples,
                                         n,

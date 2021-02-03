@@ -24,6 +24,8 @@ HERACLES_ImportanceSampling(
 )
 }
 \arguments{
+\item{nSamples}{The number of samples used in importance sampling}
+
 \item{n}{The number of species in the local community}
 
 \item{regionalSpecies}{The list of species present in the regional community (SP)}
@@ -72,7 +74,7 @@ not specified, it will computed using compute_edgeTList}
 solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
 package 'expm' or any of the numerical solvers, used in deSolve.}
 
-\item{nsamples}{The number of samples used in importance sampling}
+\item{traitdist}{TBD}
 }
 \value{
 A list containing attributes of the loglikelihood and importance sampling, and
