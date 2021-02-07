@@ -4,10 +4,10 @@
 [![](http://cranlogs.r-pkg.org/badges/grand-total/DAMOCLES)]( https://CRAN.R-project.org/package=DAMOCLES)
 [![](http://cranlogs.r-pkg.org/badges/DAMOCLES)](https://CRAN.R-project.org/package=DAMOCLES)
 
-Branch|[Travis](https://travis-ci.org)|[Codecov](https://www.codecov.io)
+Branch|![GHA logo](pics/github_actions_logo.png)|[![Codecov logo](pics/Codecov.png)](https://www.codecov.io)
 ---|---|---
-`master`|[![Build Status](https://travis-ci.org/rsetienne/DAMOCLES.svg?branch=master)](https://travis-ci.org/rsetienne/DAMOCLES)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=master)](https://codecov.io/github/rsetienne/DAMOCLES/branch/master)
-`develop`|[![Build Status](https://travis-ci.org/rsetienne/DAMOCLES.svg?branch=develop)](https://travis-ci.org/rsetienne/DAMOCLES)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=develop)](https://codecov.io/github/rsetienne/DAMOCLES/branch/develop)
+`master`|[![R build status](https://github.com/rsetienne/DAMOCLES/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/rsetienne/DAMOCLES/actions)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=master)](https://codecov.io/github/rsetienne/DAISIE/branch/master)
+`develop`|[![R build status](https://github.com/rsetienne/DAMOCLES/workflows/R-CMD-check/badge.svg?branch=develop)](https://github.com/rsetienne/DAMOCLES/actions)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=develop)](https://codecov.io/github/rsetienne/DAMOCLES/branch/develop)
 
 Dynamic Assembly Model of Colonization, Local Extinction and Speciation in `R`.
 
