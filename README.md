@@ -30,7 +30,7 @@ install.packages("DAMOCLES")
 
 Install DAMOCLES from this GitHub repository by running:
 
-```
+``` r
 install.packages("remotes")
 remotes::install_github("rsetienne/DAMOCLES")
 ```
