@@ -1,4 +1,4 @@
-//' @useDynLib DDD
+//' @useDynLib DAMOCLES
 
 
 #define STRICT_R_HEADERS
@@ -15,15 +15,14 @@ using namespace Rcpp;
 class ode_rhs
 {
 public:
-  ode_rhs(NumericVector M)
+  ode_rhs(NumericVector parsvec)
   {
-    const size_t lv = M.size;
+    const size_t lv = parsvec.size;
     for (size_t i = 0; i < lv; ++i) {
       lavec[i] = parsvec[i];            // parsvec[1:lv]
 	    muvec[i] = parsvec[lv + i];       // parsvec[(lv + 1):(2 * lv)]
 	    nn[i] = parsvec[2 * lv + i];      // parsvec[(2 * lv + 1):(3 * lv)]
     }
-    kk = static_cast<size_t>(parsvec[parsvec.size() - 1]);
   }
   
   void operator()(const std::vector<double>& xx, std::vector<double>& dx, double /* t */)
