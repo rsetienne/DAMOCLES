@@ -44,13 +44,13 @@ public:
 // [[Rcpp::export]]
 NumericVector DAMOCLES_integrate_odeint(NumericVector ry, 
                                   NumericVector times, 
-                                  NumericVector pars, 
+                                  NumericVector M, 
                                   double atol, 
                                   double rtol,
                                   std::string stepper) 
 {
   std::vector<double> y(ry.size(), 0.0);
-  auto rhs_obj = ode_rhs(pars);
+  auto rhs_obj = ode_rhs(M);
   odeint_helper::integrate(stepper, std::ref(rhs_obj), y, times[0], times[1], 0.1 * (times[1] - times[0]), atol, rtol);
   return NumericVector(y.cbegin(), y.cend());
 }
