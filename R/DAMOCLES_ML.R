@@ -154,9 +154,10 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
     numpars = 3
     namepars = c("mu","gamma_0","K")
   }
-  if(is.matrix(patrait) == 0)
+  if(!is.matrix(patrait) & !is.data.frame(patrait))
   {
-     patrait = matrix(c(phy$tip.label,patrait),nrow = length(patrait),ncol = 2 + (model > 0))
+    warning('The trait data are assumed to be in the order of how they appear in the phylogeny.')
+    patrait = matrix(c(phy$tip.label,patrait),nrow = length(patrait),ncol = 2 + (model > 0))
   }
   out2 = -1
   idpars = sort(c(idparsopt,idparsfix,idparsequal))
