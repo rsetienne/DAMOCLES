@@ -156,41 +156,6 @@ DAMOCLES_all_loglik_rhs = function(
    return(list(dp))
 }        
 
-#DAMOCLES_all_integrate_ODE_old = function(
-#   M,
-#   pars,
-#   p,
-#   tt,
-#   ca,
-#   analytical = T,
-#   model,
-#   numvar
-#   )
-#{
-#   if(analytical == TRUE & model != -1)
-#   # TAKE ANALYTICAL SOLUTION
-#   { 
-#      difft = tt[2] - tt[1]
-#      if(model == 0)
-#      { 
-#         mu = pars[1]
-#         ga = pars[2]
-#         difft = tt[2] - tt[1]
-#         p0f = mu * p[1] + ga * p[2] + ga * (p[1] - p[2]) * exp(-difft * (ga + mu))
-#         p1f = mu * p[1] + ga * p[2] - mu * (p[1] - p[2]) * exp(-difft * (ga + mu))
-#         p = 1/(ga + mu) * c(p0f,p1f)
-#      } else {
-#         #p = expm::expAtv(A = M, v = p, t = difft)[[1]]
-#         p = Matrix::expm(M * difft) %*% p
-#      }
-#   } else {
-#      # SOLVE ODE NUMERICALLY
-#      y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,M,model),rtol = 1E-10,atol = 1E-16, method = 'lsoda')
-#      p = y[2,2:(1 + numvar)]
-#   }
-#   return(p)
-#}
-
 DAMOCLES_check_Mlist = function(Mlist,pars,model,methode = 'analytical')
 {
   if(is.null(Mlist))
@@ -247,9 +212,13 @@ DAMOCLES_all_integrate_ODE = function(
          p = Re(p)
       }
    } else {
-      # SOLVE ODE NUMERICALLY
-      y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,Mlist$M,model),rtol = 1E-10,atol = 1E-16, method = methode)
-      p = y[2,2:(1 + numvar)]
+     # SOLVE ODE NUMERICALLY
+     if (startsWith(methode, "odeint::")) {
+       y <- DAMOCLES_integrate_odeint(p, tvec, Mlist$M, atol = 1E-16, rtol = 1E-10, method = methode)
+     } else {  
+       y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,Mlist$M,model),rtol = 1E-10,atol = 1E-16, method = methode)
+     }
+     p = y[2,2:(1 + numvar)]
    }
    return(p)
 }
