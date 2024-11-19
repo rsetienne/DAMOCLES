@@ -93,6 +93,19 @@ test_that("DAMOCLES_ML works with odeint", {
     methode = 'odeint::runge_kutta_dopri5',
     optimmethod = 'subplex')
   testthat::expect_equal(out,out3,tolerance = 1E-5)
+  out4 <- DAMOCLES_ML(
+    phy = NWPrimates_data[[1]],
+    pa = NWPrimates_data[[2]],
+    initparsopt = c(0.01,1.8),
+    idparsopt = c(1,2),
+    parsfix = NULL,
+    idparsfix = NULL,
+    pars2 = c(1E-3,1E-4,1E-5,1000),
+    pchoice = 0,
+    methode = 'odeint::bulirsch_stoer',
+    optimmethod = 'subplex')
+  testthat::expect_equal(out,out4,tolerance = 1E-5)
+  
 })
 
 test_that("DAMOCLES_bootstrap", {
