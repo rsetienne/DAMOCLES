@@ -29,9 +29,10 @@ public:
   
     //dx.front() = dx.back() = 0.0;
     const size_t lx = xx.size();
-	  for (size_t i = 1; i < lx; ++i) {
-	    for (size_t j = 1; j < lx; ++j) { 
-        dx[i] = M(i, j) * xx[j];
+	  for (size_t i = 0; i < lx; ++i) {
+	    dx[i] = 0.0;
+	    for (size_t j = 0; j < lx; ++j) { 
+        dx[i] += M(i, j) * xx[j];
       }
     }
   }
@@ -48,6 +49,7 @@ NumericVector DAMOCLES_integrate_odeint(const NumericVector& ry,
                                         std::string stepper) 
 {
   std::vector<double> y(ry.size(), 0.0);
+  std::copy(ry.begin(), ry.end(), y.begin());
   auto rhs_obj = ode_rhs(M);
   odeint_helper::integrate(stepper, std::ref(rhs_obj), y, times[0], times[1], 0.1 * (times[1] - times[0]), atol, rtol);
   return NumericVector(y.cbegin(), y.cend());
