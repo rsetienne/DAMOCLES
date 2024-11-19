@@ -214,9 +214,14 @@ DAMOCLES_all_integrate_ODE = function(
    } else {
      # SOLVE ODE NUMERICALLY
      if (startsWith(methode, "odeint::")) {
-       y <- DAMOCLES_integrate_odeint(p, tvec, Mlist$M, atol = 1E-16, rtol = 1E-10, method = methode)
+       print(Mlist$M)
+       print(p)
+       y <- DAMOCLES_integrate_odeint(p, tt, Mlist$M, atol = 1E-16, rtol = 1E-10, stepper = methode)
+       print(y)
      } else {  
        y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,Mlist$M,model),rtol = 1E-10,atol = 1E-16, method = methode)
+       print(y)
+       stop()
      }
      p = y[2,2:(1 + numvar)]
    }

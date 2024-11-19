@@ -27,7 +27,7 @@ public:
     //  dp = M %*% p
     //return(list(dp))
   
-    dx.front() = dx.back() = 0.0;
+    //dx.front() = dx.back() = 0.0;
     const size_t lx = xx.size();
 	  for (size_t i = 1; i < lx; ++i) {
 	    for (size_t j = 1; j < lx; ++j) { 
