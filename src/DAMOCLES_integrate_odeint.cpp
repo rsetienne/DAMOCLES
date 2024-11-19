@@ -15,17 +15,14 @@ using namespace Rcpp;
 class ode_rhs
 {
 public:
-  ode_rhs(NumericVector parsvec)
+  ode_rhs(const NumericMatrix& pars) : M(pars)
   {
-    const size_t lv = parsvec.size;
-    for (size_t i = 0; i < lv; ++i) {
-      lavec[i] = parsvec[i];            // parsvec[1:lv]
-	    muvec[i] = parsvec[lv + i];       // parsvec[(lv + 1):(2 * lv)]
-	    nn[i] = parsvec[2 * lv + i];      // parsvec[(2 * lv + 1):(3 * lv)]
-    }
+    
   }
   
-  void operator()(const std::vector<double>& xx, std::vector<double>& dx, double /* t */)
+  void operator()(const std::vector<double>& xx, 
+                  std::vector<double>& dx, 
+                  double /* t */)
   {
     //  dp = M %*% p
     //return(list(dp))
@@ -34,20 +31,21 @@ public:
     const size_t lx = xx.size();
 	  for (size_t i = 1; i < lx; ++i) {
 	    for (size_t j = 1; j < lx; ++j) { 
-        dx[i] = M[i,j] * xx[j];
+        dx[i] = M(i, j) * xx[j];
+      }
     }
   }
-  
+  const NumericMatrix& M;
 };
 
 
 // [[Rcpp::export]]
-NumericVector DAMOCLES_integrate_odeint(NumericVector ry, 
-                                  NumericVector times, 
-                                  NumericVector M, 
-                                  double atol, 
-                                  double rtol,
-                                  std::string stepper) 
+NumericVector DAMOCLES_integrate_odeint(const NumericVector& ry, 
+                                        const NumericVector& times, 
+                                        const NumericMatrix& M, 
+                                        double atol, 
+                                        double rtol,
+                                        std::string stepper) 
 {
   std::vector<double> y(ry.size(), 0.0);
   auto rhs_obj = ode_rhs(M);

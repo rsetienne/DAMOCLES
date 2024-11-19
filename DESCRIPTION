@@ -26,4 +26,4 @@ Maintainer: Rampal S. Etienne <r.s.etienne@rug.nl>
 License: GPL-2
 Description: Simulates and computes (maximum) likelihood of a dynamical model of community assembly that takes into account phylogenetic history.
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2

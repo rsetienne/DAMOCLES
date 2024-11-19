@@ -12,21 +12,22 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // DAMOCLES_integrate_odeint
-NumericVector DAMOCLES_integrate_odeint(NumericVector ry, NumericVector times, NumericVector pars, double atol, double rtol, std::string stepper);
-RcppExport SEXP _DAMOCLES_DAMOCLES_integrate_odeint(SEXP rySEXP, SEXP timesSEXP, SEXP parsSEXP, SEXP atolSEXP, SEXP rtolSEXP, SEXP stepperSEXP) {
+NumericVector DAMOCLES_integrate_odeint(const NumericVector& ry, const NumericVector& times, const NumericMatrix& M, double atol, double rtol, std::string stepper);
+RcppExport SEXP _DAMOCLES_DAMOCLES_integrate_odeint(SEXP rySEXP, SEXP timesSEXP, SEXP MSEXP, SEXP atolSEXP, SEXP rtolSEXP, SEXP stepperSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type ry(rySEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type times(timesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type pars(parsSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type ry(rySEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type times(timesSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type M(MSEXP);
     Rcpp::traits::input_parameter< double >::type atol(atolSEXP);
     Rcpp::traits::input_parameter< double >::type rtol(rtolSEXP);
     Rcpp::traits::input_parameter< std::string >::type stepper(stepperSEXP);
-    rcpp_result_gen = Rcpp::wrap(DAMOCLES_integrate_odeint(ry, times, pars, atol, rtol, stepper));
+    rcpp_result_gen = Rcpp::wrap(DAMOCLES_integrate_odeint(ry, times, M, atol, rtol, stepper));
     return rcpp_result_gen;
 END_RCPP
 }
+
 static const R_CallMethodDef CallEntries[] = {
     {"_DAMOCLES_DAMOCLES_integrate_odeint", (DL_FUNC) &_DAMOCLES_DAMOCLES_integrate_odeint, 6},
     {NULL, NULL, 0}
