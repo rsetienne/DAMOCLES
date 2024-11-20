@@ -42,7 +42,10 @@ not specified, it will computed using compute_edgeTList}
 
 \item{methode}{method used to solve the ODE. Either 'analytical' for the analytical
 solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
-package 'expm' or any of the numerical solvers, used in deSolve.}
+package 'expm' or any of the numerical solvers, used in deSolve, or any of the solvers
+used in odeint (preceded by 'odeint'), e.g. 'odeint::runge_kutta_cash_karp54',
+'odeint::runge_kutta_fehlberg78', 'odeint::runge_kutta_dopri5',
+'odeint::runge_kutta_bulirsch_stoer'}
 
 \item{model}{model used. Default is 0 (standard null model). Other options are 1 (binary traits)
 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)}

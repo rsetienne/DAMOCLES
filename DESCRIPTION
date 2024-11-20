@@ -1,14 +1,29 @@
 Package: DAMOCLES
 Type: Package
 Title: Dynamic Assembly Model of Colonization, Local Extinction and Speciation
-Version: 2.3
-Date: 2021-02-03
+Version: 3.0
+Date: 2024-11-20
 Depends: R (>= 3.0)
-Imports: caper, ape, deSolve, matrixStats, expm, picante, Matrix, DDD (>= 3.4), stats, methods, Hmisc
+Imports:
+  caper,
+  ape,
+  deSolve,
+  matrixStats,
+  expm,
+  picante,
+  Matrix,
+  DDD (>= 3.4),
+  stats,
+  methods,
+  Hmisc
+LinkingTo: 
+  Rcpp (>= 1.0.10),
+  RcppEigen,
+  BH (>= 1.81.0-1)
 Suggests: testthat (>= 2.1.0)
 Author: Rampal S. Etienne & Alex L. Pigot
 Maintainer: Rampal S. Etienne <r.s.etienne@rug.nl>
 License: GPL-2
 Description: Simulates and computes (maximum) likelihood of a dynamical model of community assembly that takes into account phylogenetic history.
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2

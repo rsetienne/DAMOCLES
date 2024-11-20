@@ -156,41 +156,6 @@ DAMOCLES_all_loglik_rhs = function(
    return(list(dp))
 }        
 
-#DAMOCLES_all_integrate_ODE_old = function(
-#   M,
-#   pars,
-#   p,
-#   tt,
-#   ca,
-#   analytical = T,
-#   model,
-#   numvar
-#   )
-#{
-#   if(analytical == TRUE & model != -1)
-#   # TAKE ANALYTICAL SOLUTION
-#   { 
-#      difft = tt[2] - tt[1]
-#      if(model == 0)
-#      { 
-#         mu = pars[1]
-#         ga = pars[2]
-#         difft = tt[2] - tt[1]
-#         p0f = mu * p[1] + ga * p[2] + ga * (p[1] - p[2]) * exp(-difft * (ga + mu))
-#         p1f = mu * p[1] + ga * p[2] - mu * (p[1] - p[2]) * exp(-difft * (ga + mu))
-#         p = 1/(ga + mu) * c(p0f,p1f)
-#      } else {
-#         #p = expm::expAtv(A = M, v = p, t = difft)[[1]]
-#         p = Matrix::expm(M * difft) %*% p
-#      }
-#   } else {
-#      # SOLVE ODE NUMERICALLY
-#      y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,M,model),rtol = 1E-10,atol = 1E-16, method = 'lsoda')
-#      p = y[2,2:(1 + numvar)]
-#   }
-#   return(p)
-#}
-
 DAMOCLES_check_Mlist = function(Mlist,pars,model,methode = 'analytical')
 {
   if(is.null(Mlist))
@@ -247,9 +212,14 @@ DAMOCLES_all_integrate_ODE = function(
          p = Re(p)
       }
    } else {
-      # SOLVE ODE NUMERICALLY
-      y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,Mlist$M,model),rtol = 1E-10,atol = 1E-16, method = methode)
-      p = y[2,2:(1 + numvar)]
+     # SOLVE ODE NUMERICALLY
+     if (startsWith(methode, "odeint::")) {
+       y <- DAMOCLES_integrate_odeint(p, tt, Mlist$M, atol = 1E-16, rtol = 1E-10, stepper = methode)
+       p <- y
+     } else {  
+       y = deSolve::ode(p,tt,DAMOCLES_all_loglik_rhs,list(pars,ca,Mlist$M,model),rtol = 1E-10,atol = 1E-16, method = methode)
+       p = y[2,2:(1 + numvar)]
+     }
    }
    return(p)
 }
@@ -377,7 +347,10 @@ DAMOCLES_check_edgeTList = function(phy,edgeTList)
 #' not specified, it will computed using compute_edgeTList
 #' @param methode method used to solve the ODE. Either 'analytical' for the analytical
 #' solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
-#' package 'expm' or any of the numerical solvers, used in deSolve.
+#' package 'expm' or any of the numerical solvers, used in deSolve, or any of the solvers
+#' used in odeint (preceded by 'odeint'), e.g. 'odeint::runge_kutta_cash_karp54',
+#' 'odeint::runge_kutta_fehlberg78', 'odeint::runge_kutta_dopri5',
+#' 'odeint::runge_kutta_bulirsch_stoer'
 #' @param model model used. Default is 0 (standard null model). Other options are 1 (binary traits)
 #' 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)
 #' @param Mlist list of M matrices that can be specified when methode = 'analytical'. If set
