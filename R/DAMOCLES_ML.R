@@ -112,7 +112,7 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
    idparsfix = NULL,
    idparsequal = NULL,
    pars2 = c(1E-3,1E-4,1E-5,1000),
-   optimmethod = 'subplex',
+   optimmethod = 'simplex',
    pchoice = 0,
    edgeTList = NULL,
    methode = 'analytical',
