@@ -13,7 +13,7 @@ DAMOCLES_ML(
   idparsfix = NULL,
   idparsequal = NULL,
   pars2 = c(0.001, 1e-04, 1e-05, 1000),
-  optimmethod = "subplex",
+  optimmethod = "simplex",
   pchoice = 0,
   edgeTList = NULL,
   methode = "analytical",
