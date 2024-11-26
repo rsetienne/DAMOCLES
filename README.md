@@ -4,7 +4,7 @@
 [![](http://cranlogs.r-pkg.org/badges/grand-total/DAMOCLES)]( https://CRAN.R-project.org/package=DAMOCLES)
 [![](http://cranlogs.r-pkg.org/badges/DAMOCLES)](https://CRAN.R-project.org/package=DAMOCLES)
 
-Branch|[![GitHub Actions logo](https://avatars.githubusercontent.com/u/44036562?s=200&v=4)](https://github.com/features/actions)|[![Codecov logo](man/figures/Codecov.png)](https://www.codecov.io)
+Branch|[![GitHub Actions logo](man/figures/github_actions_logo.png)](https://github.com/features/actions)|[![Codecov logo](man/figures/Codecov.png)](https://www.codecov.io)
 --------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 `master`|[![R build status](https://github.com/rsetienne/DAMOCLES/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/rsetienne/DAMOCLES/actions)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=master)](https://codecov.io/github/rsetienne/DAISIE/branch/master)
 `develop`|[![R build status](https://github.com/rsetienne/DAMOCLES/workflows/R-CMD-check/badge.svg?branch=develop)](https://github.com/rsetienne/DAMOCLES/actions)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=develop)](https://codecov.io/github/rsetienne/DAMOCLES/branch/develop)
