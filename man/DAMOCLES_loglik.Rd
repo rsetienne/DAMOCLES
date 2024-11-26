@@ -13,7 +13,8 @@ DAMOCLES_loglik(
   methode = "analytical",
   model = 0,
   Mlist = NULL,
-  verbose = FALSE
+  verbose = FALSE,
+  cond = 0
 )
 }
 \arguments{
@@ -42,7 +43,10 @@ not specified, it will computed using compute_edgeTList}
 
 \item{methode}{method used to solve the ODE. Either 'analytical' for the analytical
 solution, 'Matrix' for matrix exponentiation using package Matrix or 'expm' using
-package 'expm' or any of the numerical solvers, used in deSolve.}
+package 'expm' or any of the numerical solvers, used in deSolve, or any of the solvers
+used in odeint (preceded by 'odeint'), e.g. 'odeint::runge_kutta_cash_karp54',
+'odeint::runge_kutta_fehlberg78', 'odeint::runge_kutta_dopri5',
+'odeint::runge_kutta_bulirsch_stoer'}
 
 \item{model}{model used. Default is 0 (standard null model). Other options are 1 (binary traits)
 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)}
@@ -51,6 +55,9 @@ package 'expm' or any of the numerical solvers, used in deSolve.}
 at NULL (default) and methode = 'analytical', Mlist will be computed.}
 
 \item{verbose}{Whether intermediate output should be printed. Default is FALSE.}
+
+\item{cond}{Whether likelihood should be conditioned on non-empty community. Default is no
+conditioning.}
 }
 \value{
 The loglikelihood

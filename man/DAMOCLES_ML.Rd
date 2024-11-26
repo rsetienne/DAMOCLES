@@ -13,12 +13,14 @@ DAMOCLES_ML(
   idparsfix = NULL,
   idparsequal = NULL,
   pars2 = c(0.001, 1e-04, 1e-05, 1000),
-  optimmethod = "subplex",
+  optimmethod = "simplex",
   pchoice = 0,
   edgeTList = NULL,
   methode = "analytical",
   model = 0,
-  verbose = FALSE
+  num_cycles = 1,
+  verbose = FALSE,
+  cond = 0
 )
 }
 \arguments{
@@ -73,7 +75,13 @@ package 'expm' or any of the numerical solvers, used in deSolve.}
 \item{model}{model used. Default is 0 (standard null model). Other options are 1 (binary traits)
 2 (trinary environmental trait) or 3 (diversity-dependent colonization - beta version)}
 
+\item{num_cycles}{the number of cycles of opimization. If set at Inf, it will
+do as many cycles as needed to meet the tolerance set for the target function.}
+
 \item{verbose}{Whether intermediate output should be printed. Default is FALSE.}
+
+\item{cond}{Whether likelihood should be conditioned on non-empty community. Default is no
+conditioning.}
 }
 \value{
 \item{mu}{ gives the maximum likelihood estimate of mu}
