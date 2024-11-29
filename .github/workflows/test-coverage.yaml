@@ -4,14 +4,13 @@ on:
   push:
   pull_request:
 
-name: test-coverage
+name: test-coverage.yaml
 
 permissions: read-all
 
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, '[run ci]') || (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') || github.event.pull_request"
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
@@ -39,7 +38,8 @@ jobs:
 
       - uses: codecov/codecov-action@v4
         with:
-          fail_ci_if_error: ${{ github.event_name != 'pull_request' && true || false }}
+          # Fail if error if not on PR, or if on PR and token is given
+          fail_ci_if_error: ${{ github.event_name != 'pull_request' || secrets.CODECOV_TOKEN }}
           file: ./cobertura.xml
           plugin: noop
           disable_search: true
