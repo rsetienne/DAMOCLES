@@ -1,13 +1,15 @@
 # DAMOCLES
 
+<!-- badges: start -->
 ![CRAN/METACRAN Version](https://img.shields.io/cran/v/DAMOCLES)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/DAMOCLES)]( https://CRAN.R-project.org/package=DAMOCLES)
 [![](http://cranlogs.r-pkg.org/badges/DAMOCLES)](https://CRAN.R-project.org/package=DAMOCLES)
+<!-- badges: end -->
 
 Branch|[![GitHub Actions logo](man/figures/github_actions_logo.png)](https://github.com/features/actions)|[![Codecov logo](man/figures/Codecov.png)](https://www.codecov.io)
 --------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-`master`|[![R-CMD-check](https://github.com/rsetienne/DAMOCLES/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/rsetienne/DAMOCLES/actions/workflows/R-CMD-check.yaml)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=master)](https://codecov.io/github/rsetienne/DAMOCLES/branch/master)
-`develop`|[![R-CMD-check](https://github.com/rsetienne/DAMOCLES/actions/workflows/R-CMD-check.yaml/badge.svg?branch=develop)](https://github.com/rsetienne/DAMOCLES/actions/workflows/R-CMD-check.yaml)|[![codecov.io](https://codecov.io/github/rsetienne/DAMOCLES/coverage.svg?branch=develop)](https://codecov.io/github/rsetienne/DAMOCLES/branch/develop)
+`master`|[![R-CMD-check](https://github.com/rsetienne/DAMOCLES/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/rsetienne/DAMOCLES/actions/workflows/R-CMD-check.yaml)|[![Codecov test coverage](https://codecov.io/gh/rsetienne/damocles/branch/master/graph/badge.svg)](https://app.codecov.io/gh/rsetienne/damocles?branch=master)
+`develop`|[![R-CMD-check](https://github.com/rsetienne/DAMOCLES/actions/workflows/R-CMD-check.yaml/badge.svg?branch=develop)](https://github.com/rsetienne/DAMOCLES/actions/workflows/R-CMD-check.yaml)|[![Codecov test coverage](https://codecov.io/gh/rsetienne/damocles/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/rsetienne/damocles?branch=develop)
 
 
 Dynamic Assembly Model of Colonization, Local Extinction and Speciation in `R`.
