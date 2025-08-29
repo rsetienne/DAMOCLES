@@ -3,4 +3,6 @@
 .RData
 .Ruserdata
 dimmod.mod
+.DS_Store
 docs
+

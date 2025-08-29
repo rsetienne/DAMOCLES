@@ -8,3 +8,7 @@ DAMOCLES_integrate_odeint <- function(ry, times, M, atol, rtol, stepper) {
     .Call('_DAMOCLES_DAMOCLES_integrate_odeint', PACKAGE = 'DAMOCLES', ry, times, M, atol, rtol, stepper)
 }
 
+DAMOCLES_sim_cpp <- function(pa, gamma, mu) {
+    .Call('_DAMOCLES_DAMOCLES_sim_cpp', PACKAGE = 'DAMOCLES', pa, gamma, mu)
+}
+
