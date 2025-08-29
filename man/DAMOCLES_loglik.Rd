@@ -13,7 +13,8 @@ DAMOCLES_loglik(
   methode = "analytical",
   model = 0,
   Mlist = NULL,
-  verbose = FALSE
+  verbose = FALSE,
+  cond = 0
 )
 }
 \arguments{
@@ -54,6 +55,9 @@ used in odeint (preceded by 'odeint'), e.g. 'odeint::runge_kutta_cash_karp54',
 at NULL (default) and methode = 'analytical', Mlist will be computed.}
 
 \item{verbose}{Whether intermediate output should be printed. Default is FALSE.}
+
+\item{cond}{Whether likelihood should be conditioned on non-empty community. Default is no
+conditioning.}
 }
 \value{
 The loglikelihood

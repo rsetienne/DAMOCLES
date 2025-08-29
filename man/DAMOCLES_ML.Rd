@@ -19,7 +19,8 @@ DAMOCLES_ML(
   methode = "analytical",
   model = 0,
   num_cycles = 1,
-  verbose = FALSE
+  verbose = FALSE,
+  cond = 0
 )
 }
 \arguments{
@@ -78,6 +79,9 @@ package 'expm' or any of the numerical solvers, used in deSolve.}
 do as many cycles as needed to meet the tolerance set for the target function.}
 
 \item{verbose}{Whether intermediate output should be printed. Default is FALSE.}
+
+\item{cond}{Whether likelihood should be conditioned on non-empty community. Default is no
+conditioning.}
 }
 \value{
 \item{mu}{ gives the maximum likelihood estimate of mu}

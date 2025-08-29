@@ -356,6 +356,8 @@ DAMOCLES_check_edgeTList = function(phy,edgeTList)
 #' @param Mlist list of M matrices that can be specified when methode = 'analytical'. If set
 #' at NULL (default) and methode = 'analytical', Mlist will be computed.
 #' @param verbose Whether intermediate output should be printed. Default is FALSE.
+#' @param cond Whether likelihood should be conditioned on non-empty community. Default is no
+#' conditioning.
 #' @return The loglikelihood
 #' @author Rampal S. Etienne
 #' @seealso \code{\link{DAMOCLES_ML}} \code{\link{DAMOCLES_sim}}
@@ -390,7 +392,8 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
    methode = 'analytical',
    model = 0, 
    Mlist = NULL,
-   verbose = FALSE
+   verbose = FALSE,
+   cond = 0
    )
 {
   edgeTList = DAMOCLES_check_edgeTList(phy,edgeTList)
@@ -542,6 +545,25 @@ DAMOCLES_loglik <- DAMOCLES_all_loglik <- function(
 	}  
   #if(min(patraittable[2:(numvar + 1)]) < 0) { print(as.numeric(patraittable[2:(numvar + 1)])) }
 	loglik = loglik + log(sum(pchoicevec * as.numeric(patraittable[2:(numvar + 1)])))
+	
+	if(cond == 1) {
+	  pa2 <- pa
+	  pa2[,2] <- 0
+	  logcond <- DAMOCLES_loglik(
+	    phy = phy,
+	    pa = pa2,
+	    pars = pars,
+	    pchoice = pchoice,
+	    edgeTList = edgeTList,
+	    methode = methode,
+	    model = model, 
+	    Mlist = Mlist,
+	    verbose = verbose,
+	    cond = 0
+	  )
+	  loglik <- loglik - log(-expm1(logcond))
+	 }
+	
   if (verbose) { 
     s1 = sprintf('Parameters:')
     s2 = sprintf('%f ',pars)

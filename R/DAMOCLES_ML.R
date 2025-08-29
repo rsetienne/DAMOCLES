@@ -10,7 +10,8 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,
                                           pchoice,
                                           methode,
                                           model,
-                                          verbose)
+                                          verbose,
+                                          cond)
 {
    trpars1 = rep(0,3 * (model == -1) + 2 * (model == 0) + 10 * (model == 0.1 | model == 0.2) + 8 * (model == 1) + 12 * (model == 2 | model == 2.2))
    trpars1[idparsopt] = trparsopt
@@ -29,10 +30,10 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,
        pars1 = trpars1/(1 - trpars1)
        if(model < 3)
        {
-         loglik = DAMOCLES_all_loglik(phy = phy,pa = patrait,pars = pars1,pchoice = pchoice,edgeTList = edgeTList,methode = methode,model = model,Mlist = NULL, verbose = verbose)
+         loglik = DAMOCLES_all_loglik(phy = phy,pa = patrait,pars = pars1,pchoice = pchoice,edgeTList = edgeTList,methode = methode,model = model,Mlist = NULL, verbose = verbose, cond = cond)
        } else
        {
-         loglik = DAMOCLES_DD_loglik(phy = phy,pa = patrait,pars = pars1,pchoice = pchoice,locatenode = locatenode,methode = methode,verbose = verbose)
+         loglik = DAMOCLES_DD_loglik(phy = phy,pa = patrait,pars = pars1,pchoice = pchoice,locatenode = locatenode,methode = methode,verbose = verbose, cond = cond)
        }
    }
    return(loglik)
@@ -97,6 +98,8 @@ DAMOCLES_all_loglik_choosepar <- function(trparsopt,
 #' @param num_cycles the number of cycles of opimization. If set at Inf, it will
 #' do as many cycles as needed to meet the tolerance set for the target function.
 #' @param verbose Whether intermediate output should be printed. Default is FALSE.
+#' @param cond Whether likelihood should be conditioned on non-empty community. Default is no
+#' conditioning.
 #' @author Rampal S. Etienne
 #' @seealso \code{\link{DAMOCLES_loglik}} \code{\link{DAMOCLES_sim}}
 #' @references Pigot, A.L. & R.S. Etienne (2015). A new dynamic null model for
@@ -118,7 +121,8 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
    methode = 'analytical',
    model = 0,
    num_cycles = 1,
-   verbose = FALSE)
+   verbose = FALSE,
+   cond = 0)
 {
   locatenode <- NULL
   if(model < 3)
@@ -188,7 +192,7 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
       trparsfix = parsfix/(1 + parsfix)
       trparsfix[parsfix == Inf] = 1
       utils::flush.console()
-      initloglik = DAMOCLES_all_loglik_choosepar(trparsopt = trparsopt,trparsfix = trparsfix,idparsopt = idparsopt,idparsfix = idparsfix,idparsequal = idparsequal,phy = phy,patrait = patrait,edgeTList = edgeTList,locatenode = locatenode,methode = methode,pchoice = pchoice,model = model, verbose = verbose)
+      initloglik = DAMOCLES_all_loglik_choosepar(trparsopt = trparsopt,trparsfix = trparsfix,idparsopt = idparsopt,idparsfix = idparsfix,idparsequal = idparsequal,phy = phy,patrait = patrait,edgeTList = edgeTList,locatenode = locatenode,methode = methode,pchoice = pchoice,model = model, verbose = verbose, cond = cond)
       cat("The loglikelihood for the initial parameter values is",initloglik,"\n")
       utils::flush.console()
       if(initloglik == -Inf)
@@ -216,7 +220,8 @@ DAMOCLES_ML <- DAMOCLES_all_ML <- function(
                            pchoice = pchoice,
                            model = model,
                            verbose = verbose,
-                           num_cycles = num_cycles)
+                           num_cycles = num_cycles,
+                           cond = cond)
       if(out$conv > 0)
       {
         cat("Optimization has not converged. Try again with different starting values.\n")
