@@ -27,9 +27,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// DAMOCLES_sim_cpp
+IntegerVector DAMOCLES_sim_cpp(Rcpp::DataFrame pa, double gamma, double mu);
+RcppExport SEXP _DAMOCLES_DAMOCLES_sim_cpp(SEXP paSEXP, SEXP gammaSEXP, SEXP muSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type pa(paSEXP);
+    Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
+    rcpp_result_gen = Rcpp::wrap(DAMOCLES_sim_cpp(pa, gamma, mu));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_DAMOCLES_DAMOCLES_integrate_odeint", (DL_FUNC) &_DAMOCLES_DAMOCLES_integrate_odeint, 6},
+    {"_DAMOCLES_DAMOCLES_sim_cpp", (DL_FUNC) &_DAMOCLES_DAMOCLES_sim_cpp, 3},
     {NULL, NULL, 0}
 };
 
