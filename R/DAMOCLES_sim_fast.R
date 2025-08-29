@@ -9,8 +9,8 @@
 #' @param root.state geographic state of ancestor i.e. present (1) or absent(0)
 #' @param keepExtinct whether to retain data for extinct lineages
 #' @param stateOnly whether to return only the presence or absence states of the extant species
-#' @return Either a table containing the following
-#' columns: The first two columns contain the edge list of the phylogenetic tree, and the following two
+#' @return Either a vector with presence absence states or a table containing the following
+#' columns is realised: The first two columns contain the edge list of the phylogenetic tree, and the following two
 #' contain when each edge starts and ends, and the fifth column if lineage is extant.
 #' The sixth column contains the presence (1) or absence (0) of the species, which is identical
 #' to the output if stateOnly == TRUE, when keepExtinct == FALSE and stateOnly == FALSE. Column
