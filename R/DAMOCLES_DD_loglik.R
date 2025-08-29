@@ -265,7 +265,8 @@ DAMOCLES_DD_loglik <- function(
   direction = 'backward',
   locatenode = NULL,
   methode = 'lsoda',
-  verbose = FALSE
+  verbose = FALSE,
+  cond = 0
 )
 {
   if(pars[3] < sum(as.numeric(pa[,2])))

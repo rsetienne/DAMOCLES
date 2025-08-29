@@ -1,9 +1,9 @@
 Package: DAMOCLES
 Type: Package
 Title: Dynamic Assembly Model of Colonization, Local Extinction and Speciation
-Version: 3.0
-Date: 2024-11-20
-Depends: R (>= 3.0)
+Version: 3.1
+Date: 2024-11-26
+Depends: R (>= 3.0.2)
 Imports:
   caper,
   ape,
@@ -27,3 +27,4 @@ License: GPL-2
 Description: Simulates and computes (maximum) likelihood of a dynamical model of community assembly that takes into account phylogenetic history.
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+URL: https://rsetienne.github.io/DAMOCLES/
